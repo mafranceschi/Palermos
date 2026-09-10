@@ -113,6 +113,29 @@ export async function searchClients(search: string): Promise<Client[]> {
   return (data ?? []) as Client[];
 }
 
+export type ClientWithVehicleCount = Client & { vehicleCount: number };
+
+export async function getClients(
+  search?: string
+): Promise<ClientWithVehicleCount[]> {
+  const supabase = getSupabaseAdmin();
+  let query = supabase
+    .from("clients")
+    .select("*, vehicles(count)")
+    .order("name");
+  if (search) query = query.ilike("name", `%${search}%`);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  return (data ?? []).map((row) => {
+    const { vehicles, ...client } = row as Client & {
+      vehicles: { count: number }[];
+    };
+    return { ...client, vehicleCount: vehicles?.[0]?.count ?? 0 };
+  });
+}
+
 export async function getClientById(id: string): Promise<Client | null> {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
