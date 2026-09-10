@@ -36,7 +36,7 @@ export default async function JobDetailPage({
         <StatusBadge status={job.status} />
       </div>
 
-      <section className="rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 font-medium">Estado del trabajo</h2>
         <StatusForm jobId={job.id} currentStatus={job.status} />
         <p className="mt-2 text-xs text-neutral-400">
@@ -46,12 +46,12 @@ export default async function JobDetailPage({
         </p>
       </section>
 
-      <section className="rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 font-medium">Detalle</h2>
         <DetailsForm job={job} />
       </section>
 
-      <section className="rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 font-medium">Fotos ({photos.length})</h2>
         {photos.length > 0 && (
           <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3">

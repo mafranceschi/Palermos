@@ -27,7 +27,7 @@ export default async function ClientDetailPage({
         )}
       </div>
 
-      <section className="rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 font-medium">
           Vehículos ({vehicles.length})
         </h2>
@@ -45,7 +45,7 @@ export default async function ClientDetailPage({
         )}
       </section>
 
-      <section className="rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 font-medium">
           Historial de trabajos ({jobs.length})
         </h2>

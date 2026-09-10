@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
             <Link
               href="/nuevo"
-              className="rounded-md bg-neutral-900 px-3 py-1.5 font-medium text-white hover:bg-neutral-700"
+              className="rounded-md bg-orange-600 px-3 py-1.5 font-medium text-white transition-colors hover:bg-orange-700"
             >
               + Nuevo ingreso
             </Link>

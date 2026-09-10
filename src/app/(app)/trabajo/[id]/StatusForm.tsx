@@ -34,7 +34,7 @@ export function StatusForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
       >
         {pending ? "Actualizando..." : "Actualizar estado"}
       </button>

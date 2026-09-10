@@ -94,7 +94,7 @@ export function NewJobForm() {
 
   return (
     <form action={formAction} className="space-y-6">
-      <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="font-medium">Vehículo</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <input
@@ -140,7 +140,7 @@ export function NewJobForm() {
       </section>
 
       {vehicleStatus !== "found" && (
-        <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4">
+        <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
           <h2 className="font-medium">Cliente</h2>
           <p className="text-xs text-neutral-500">
             Buscá si ya es cliente del taller, o completá los datos para
@@ -217,7 +217,7 @@ export function NewJobForm() {
         </section>
       )}
 
-      <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="font-medium">Trabajo</h2>
         <textarea
           name="client_request"
@@ -233,7 +233,7 @@ export function NewJobForm() {
         />
       </section>
 
-      <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4">
+      <section className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="font-medium">Fotos</h2>
         <input
           ref={fileInputRef}
@@ -271,7 +271,7 @@ export function NewJobForm() {
       <button
         type="submit"
         disabled={pending || compressing}
-        className="w-full rounded-md bg-neutral-900 px-4 py-3 font-medium text-white disabled:opacity-50"
+        className="w-full rounded-md bg-orange-600 px-4 py-3 font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
       >
         {pending ? "Guardando..." : "Guardar ingreso"}
       </button>
