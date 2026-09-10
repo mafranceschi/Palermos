@@ -135,7 +135,7 @@ export function NewJobForm() {
             placeholder="Marca"
             disabled={vehicleKnown}
             defaultValue={foundVehicle?.brand ?? ""}
-            className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400`}
+            className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500`}
           />
           <input
             type="text"
@@ -143,7 +143,7 @@ export function NewJobForm() {
             placeholder="Modelo"
             disabled={vehicleKnown}
             defaultValue={foundVehicle?.model ?? ""}
-            className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400`}
+            className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500`}
           />
           <input
             type="text"
@@ -151,12 +151,12 @@ export function NewJobForm() {
             placeholder="Color"
             disabled={vehicleKnown}
             defaultValue={foundVehicle?.color ?? ""}
-            className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400`}
+            className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500`}
           />
         </div>
 
         {vehicleStatus === "found" && foundVehicle && (
-          <p className="flex items-start gap-2 rounded-xl bg-blue-50 px-3 py-2.5 text-sm text-blue-800">
+          <p className="flex items-start gap-2 rounded-xl bg-blue-50 px-3 py-2.5 text-sm text-blue-800 dark:bg-blue-500/10 dark:text-blue-300">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
               Vehículo existente de <strong>{foundVehicle.client.name}</strong>.
@@ -172,7 +172,7 @@ export function NewJobForm() {
             <User className="h-4 w-4 text-orange-600" />
             Cliente
           </h2>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             Buscá si ya es cliente del taller, o completá los datos para
             crearlo.
           </p>
@@ -185,10 +185,10 @@ export function NewJobForm() {
               defaultValue={selectedClient?.name ?? ""}
               disabled={!!selectedClient}
               onChange={(e) => handleClientNameChange(e.target.value)}
-              className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400`}
+              className={`${input} disabled:bg-neutral-100 disabled:text-neutral-400 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500`}
             />
             {clientResults.length > 0 && !selectedClient && (
-              <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg">
+              <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
                 {clientResults.map((c) => (
                   <li key={c.id}>
                     <button
@@ -197,7 +197,7 @@ export function NewJobForm() {
                         setSelectedClient(c);
                         setClientResults([]);
                       }}
-                      className="block w-full px-3.5 py-2.5 text-left text-sm hover:bg-orange-50"
+                      className="block w-full px-3.5 py-2.5 text-left text-sm hover:bg-orange-50 dark:text-neutral-100 dark:hover:bg-orange-500/10"
                     >
                       {c.name}{" "}
                       {c.phone && (
@@ -211,7 +211,7 @@ export function NewJobForm() {
           </div>
 
           {selectedClient ? (
-            <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-800">
+            <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300">
               <span className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4" />
                 Cliente existente: {selectedClient.name}
@@ -273,12 +273,12 @@ export function NewJobForm() {
           Fotos
         </h2>
 
-        <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center transition-colors hover:border-orange-400 hover:bg-orange-50/50">
+        <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center transition-colors hover:border-orange-400 hover:bg-orange-50/50 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:border-orange-500/60 dark:hover:bg-orange-500/5">
           <Camera className="h-6 w-6 text-neutral-400" />
-          <span className="text-sm font-medium text-neutral-600">
+          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
             {compressing ? "Optimizando fotos…" : "Tocá para sacar o subir fotos"}
           </span>
-          <span className="text-xs text-neutral-400">
+          <span className="text-xs text-neutral-400 dark:text-neutral-500">
             Se comprimen automáticamente antes de subir
           </span>
           <input
@@ -316,7 +316,7 @@ export function NewJobForm() {
       </section>
 
       {state.error && (
-        <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+        <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300">
           {state.error}
         </p>
       )}

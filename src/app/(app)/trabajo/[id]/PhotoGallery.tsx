@@ -33,9 +33,9 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
 
   if (photos.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-10 text-center">
-        <ImageOff className="h-6 w-6 text-neutral-300" />
-        <p className="text-sm text-neutral-400">Todavía no hay fotos</p>
+      <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-10 text-center dark:border-neutral-700 dark:bg-neutral-800/50">
+        <ImageOff className="h-6 w-6 text-neutral-300 dark:text-neutral-600" />
+        <p className="text-sm text-neutral-400 dark:text-neutral-500">Todavía no hay fotos</p>
       </div>
     );
   }
@@ -48,7 +48,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             key={photo.id}
             type="button"
             onClick={() => setOpenIndex(i)}
-            className="group aspect-square overflow-hidden rounded-xl bg-neutral-100"
+            className="group aspect-square overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

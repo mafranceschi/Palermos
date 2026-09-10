@@ -47,16 +47,16 @@ export default async function DashboardPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
           Ingresos
         </h1>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           {jobs.length} resultado{jobs.length === 1 ? "" : "s"}
         </p>
       </div>
 
       <form className={`${card} space-y-4`}>
-        <div className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+        <div className="flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
           <SlidersHorizontal className="h-4 w-4 text-orange-600" />
           Filtros
         </div>
@@ -123,13 +123,13 @@ export default async function DashboardPage({
 
       {jobs.length === 0 ? (
         <div className={`${card} flex flex-col items-center gap-2 border-dashed py-14 text-center`}>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-50">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-500/10">
             <Car className="h-6 w-6 text-orange-500" />
           </div>
-          <p className="font-medium text-neutral-700">
+          <p className="font-medium text-neutral-700 dark:text-neutral-200">
             {hasFilters ? "No hay ingresos que coincidan" : "Todavía no hay ingresos"}
           </p>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             {hasFilters
               ? "Probá ajustar los filtros de búsqueda."
               : "Registrá el primer vehículo que entra al taller."}
@@ -141,9 +141,9 @@ export default async function DashboardPage({
             <Link
               key={job.id}
               href={`/trabajo/${job.id}`}
-              className={`group flex gap-3 rounded-2xl border border-l-4 border-neutral-200 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg ${STATUS_ACCENT[job.status]}`}
+              className={`group flex gap-3 rounded-2xl border border-l-4 border-neutral-200 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 ${STATUS_ACCENT[job.status]}`}
             >
-              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
                 {thumbnails[i] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -152,25 +152,25 @@ export default async function DashboardPage({
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-neutral-300">
+                  <div className="flex h-full w-full items-center justify-center text-neutral-300 dark:text-neutral-600">
                     <Car className="h-7 w-7" />
                   </div>
                 )}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="truncate font-bold text-neutral-900">
+                  <span className="truncate font-bold text-neutral-900 dark:text-neutral-100">
                     {job.vehicle.plate}
                   </span>
                   <StatusBadge status={job.status} />
                 </div>
-                <p className="truncate text-sm text-neutral-600">
+                <p className="truncate text-sm text-neutral-600 dark:text-neutral-300">
                   {job.vehicle.brand} {job.vehicle.model}
                 </p>
-                <p className="truncate text-sm text-neutral-500">
+                <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
                   {job.vehicle.client.name}
                 </p>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">
                   {new Date(job.entry_date).toLocaleDateString("es-AR")}
                 </p>
               </div>

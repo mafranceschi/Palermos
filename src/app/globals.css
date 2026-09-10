@@ -1,9 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --background: #fafaf9;
   --foreground: #1c1917;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0c0a09;
+    --foreground: #f5f5f4;
+  }
 }
 
 @theme inline {
@@ -23,6 +30,6 @@ body {
   textarea:focus {
     outline: none;
     border-color: var(--color-orange-500);
-    box-shadow: 0 0 0 3px var(--color-orange-100);
+    box-shadow: 0 0 0 3px var(--color-orange-200);
   }
 }

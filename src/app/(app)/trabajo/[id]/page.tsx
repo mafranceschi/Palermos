@@ -26,10 +26,10 @@ export default async function JobDetailPage({
         className={`flex flex-wrap items-start justify-between gap-3 border-l-4 ${STATUS_ACCENT[job.status]} ${card}`}
       >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
             {job.vehicle.plate}
           </h1>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             {[job.vehicle.brand, job.vehicle.model, job.vehicle.color, job.vehicle.year]
               .filter(Boolean)
               .join(" · ")}
@@ -51,7 +51,7 @@ export default async function JobDetailPage({
           Estado del trabajo
         </h2>
         <StatusForm jobId={job.id} currentStatus={job.status} />
-        <p className="flex items-center gap-1.5 text-xs text-neutral-400">
+        <p className="flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500">
           <Calendar className="h-3.5 w-3.5" />
           Ingresó el {new Date(job.entry_date).toLocaleString("es-AR")}
           {job.exit_date &&

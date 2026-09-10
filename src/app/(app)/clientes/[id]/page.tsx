@@ -23,10 +23,10 @@ export default async function ClientDetailPage({
           <User className="h-5 w-5" />
         </span>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
             {client.name}
           </h1>
-          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-500">
+          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400">
             {client.phone && (
               <span className="flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5" />
@@ -42,7 +42,7 @@ export default async function ClientDetailPage({
             {!client.phone && !client.email && <span>Sin datos de contacto</span>}
           </div>
           {client.notes && (
-            <p className="mt-2 text-sm text-neutral-500">{client.notes}</p>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{client.notes}</p>
           )}
         </div>
       </div>
@@ -53,15 +53,15 @@ export default async function ClientDetailPage({
           Vehículos ({vehicles.length})
         </h2>
         {vehicles.length === 0 ? (
-          <p className="text-sm text-neutral-500">Sin vehículos registrados.</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Sin vehículos registrados.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {vehicles.map((v) => (
               <span
                 key={v.id}
-                className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700"
+                className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
               >
-                <span className="font-semibold text-neutral-900">{v.plate}</span>
+                <span className="font-semibold text-neutral-900 dark:text-neutral-100">{v.plate}</span>
                 {(v.brand || v.model) && (
                   <span className="text-neutral-400">
                     · {[v.brand, v.model].filter(Boolean).join(" ")}
@@ -79,25 +79,25 @@ export default async function ClientDetailPage({
           Historial de trabajos ({jobs.length})
         </h2>
         {jobs.length === 0 ? (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Todavía no hay ingresos registrados.
           </p>
         ) : (
-          <ul className="divide-y divide-neutral-100">
+          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
             {jobs.map((job) => (
               <li key={job.id}>
                 <Link
                   href={`/trabajo/${job.id}`}
-                  className={`-mx-2 flex items-center justify-between gap-3 rounded-xl border-l-4 px-2 py-3 transition-colors hover:bg-neutral-50 ${STATUS_ACCENT[job.status]}`}
+                  className={`-mx-2 flex items-center justify-between gap-3 rounded-xl border-l-4 px-2 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800 ${STATUS_ACCENT[job.status]}`}
                 >
                   <div className="min-w-0">
-                    <p className="font-semibold text-neutral-900">
+                    <p className="font-semibold text-neutral-900 dark:text-neutral-100">
                       {job.vehicle.plate}
                     </p>
-                    <p className="truncate text-sm text-neutral-500">
+                    <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
                       {job.work_description || job.client_request || "Sin descripción"}
                     </p>
-                    <p className="text-xs text-neutral-400">
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500">
                       {new Date(job.entry_date).toLocaleDateString("es-AR")}
                     </p>
                   </div>

@@ -55,7 +55,7 @@ export function AddPhotosForm({ jobId }: { jobId: string }) {
       >
         {compressing ? "Optimizando..." : pending ? "Subiendo..." : "Agregar fotos"}
       </button>
-      {state.error && <span className="text-sm text-red-600">{state.error}</span>}
+      {state.error && <span className="text-sm text-red-600 dark:text-red-400">{state.error}</span>}
     </form>
   );
 }

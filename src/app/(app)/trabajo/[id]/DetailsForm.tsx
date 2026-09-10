@@ -16,7 +16,7 @@ export function DetailsForm({ job }: { job: Job }) {
   return (
     <form action={formAction} className="space-y-3">
       <div>
-        <label className="text-xs font-medium text-neutral-500">
+        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
           Pedido del cliente
         </label>
         <textarea
@@ -27,7 +27,7 @@ export function DetailsForm({ job }: { job: Job }) {
         />
       </div>
       <div>
-        <label className="text-xs font-medium text-neutral-500">
+        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
           Descripción del trabajo
         </label>
         <textarea
@@ -38,7 +38,7 @@ export function DetailsForm({ job }: { job: Job }) {
         />
       </div>
       <div>
-        <label className="text-xs font-medium text-neutral-500">
+        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
           Notas internas
         </label>
         <textarea
@@ -48,7 +48,7 @@ export function DetailsForm({ job }: { job: Job }) {
           className={`mt-1 ${input}`}
         />
       </div>
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>}
       <button type="submit" disabled={pending} className={buttonSecondary}>
         {pending ? "Guardando..." : "Guardar cambios"}
       </button>
