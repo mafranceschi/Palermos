@@ -1,17 +1,26 @@
 import { JOB_STATUS_LABELS, type JobStatus } from "@/lib/types";
 
-const STATUS_STYLES: Record<JobStatus, string> = {
-  ingresado: "bg-blue-100 text-blue-800",
-  en_reparacion: "bg-amber-100 text-amber-800",
-  listo: "bg-green-100 text-green-800",
-  entregado: "bg-neutral-200 text-neutral-700",
+const STATUS_STYLES: Record<JobStatus, { badge: string; dot: string }> = {
+  ingresado: { badge: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200", dot: "bg-blue-500" },
+  en_reparacion: { badge: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200", dot: "bg-amber-500" },
+  listo: { badge: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200", dot: "bg-emerald-500" },
+  entregado: { badge: "bg-neutral-100 text-neutral-600 ring-1 ring-inset ring-neutral-200", dot: "bg-neutral-400" },
+};
+
+export const STATUS_ACCENT: Record<JobStatus, string> = {
+  ingresado: "border-l-blue-500",
+  en_reparacion: "border-l-amber-500",
+  listo: "border-l-emerald-500",
+  entregado: "border-l-neutral-300",
 };
 
 export function StatusBadge({ status }: { status: JobStatus }) {
+  const style = STATUS_STYLES[status];
   return (
     <span
-      className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[status]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${style.badge}`}
     >
+      <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
       {JOB_STATUS_LABELS[status]}
     </span>
   );

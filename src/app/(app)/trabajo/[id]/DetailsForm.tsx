@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { updateDetailsAction, type ActionState } from "./actions";
 import type { Job } from "@/lib/types";
+import { buttonSecondary, input } from "@/lib/ui";
 
 const initialState: ActionState = {};
 
@@ -22,7 +23,7 @@ export function DetailsForm({ job }: { job: Job }) {
           name="client_request"
           defaultValue={job.client_request ?? ""}
           rows={2}
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className={`mt-1 ${input}`}
         />
       </div>
       <div>
@@ -33,7 +34,7 @@ export function DetailsForm({ job }: { job: Job }) {
           name="work_description"
           defaultValue={job.work_description ?? ""}
           rows={3}
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className={`mt-1 ${input}`}
         />
       </div>
       <div>
@@ -44,15 +45,11 @@ export function DetailsForm({ job }: { job: Job }) {
           name="notes"
           defaultValue={job.notes ?? ""}
           rows={2}
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className={`mt-1 ${input}`}
         />
       </div>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={buttonSecondary}>
         {pending ? "Guardando..." : "Guardar cambios"}
       </button>
     </form>

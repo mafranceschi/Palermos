@@ -1,8 +1,10 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
+import { Camera } from "lucide-react";
 import { compressImage } from "@/lib/image-compression";
 import { addPhotosAction, type ActionState } from "./actions";
+import { buttonSecondary } from "@/lib/ui";
 
 const initialState: ActionState = {};
 
@@ -32,20 +34,24 @@ export function AddPhotosForm({ jobId }: { jobId: string }) {
   }
 
   return (
-    <form action={formAction} className="flex flex-wrap items-center gap-2">
-      <input
-        ref={fileInputRef}
-        type="file"
-        name="photos"
-        accept="image/*"
-        multiple
-        onChange={handleFilesChange}
-        className="text-sm"
-      />
+    <form action={formAction} className="flex flex-wrap items-center gap-2 pt-1">
+      <label className={`${buttonSecondary} cursor-pointer`}>
+        <Camera className="h-4 w-4" />
+        Elegir fotos
+        <input
+          ref={fileInputRef}
+          type="file"
+          name="photos"
+          accept="image/*"
+          multiple
+          onChange={handleFilesChange}
+          className="hidden"
+        />
+      </label>
       <button
         type="submit"
         disabled={pending || compressing}
-        className="rounded-md bg-orange-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50"
       >
         {compressing ? "Optimizando..." : pending ? "Subiendo..." : "Agregar fotos"}
       </button>
