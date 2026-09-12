@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { login, type LoginState } from "./actions";
 import { BrandMark } from "@/components/BrandMark";
@@ -18,7 +19,10 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-orange-600/30 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-amber-500/20 blur-3xl" />
 
-      <form
+      <motion.form
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
         action={formAction}
         className="relative w-full max-w-sm space-y-5 rounded-2xl border border-white/10 bg-white p-7 shadow-2xl"
       >
@@ -71,7 +75,7 @@ export default function LoginPage() {
         <button type="submit" disabled={pending} className={`${buttonPrimary} w-full`}>
           {pending ? "Ingresando..." : "Ingresar"}
         </button>
-      </form>
+      </motion.form>
     </div>
   );
 }

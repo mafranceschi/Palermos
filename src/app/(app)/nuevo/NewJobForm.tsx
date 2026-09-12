@@ -5,7 +5,7 @@ import { Camera, Car, CheckCircle2, User, Wrench, X } from "lucide-react";
 import { compressImage } from "@/lib/image-compression";
 import { createJobAction, type CreateJobState } from "./actions";
 import type { Client, Vehicle } from "@/lib/types";
-import { buttonPrimary, card, input, sectionLabel } from "@/lib/ui";
+import { card, input, sectionLabel } from "@/lib/ui";
 
 const initialState: CreateJobState = {};
 
@@ -324,7 +324,7 @@ export function NewJobForm() {
       <button
         type="submit"
         disabled={pending || compressing}
-        className={`${buttonPrimary} w-full py-3.5 text-base`}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/35 hover:brightness-105 active:scale-[0.98] disabled:opacity-50"
       >
         {pending ? "Guardando..." : "Guardar ingreso"}
       </button>

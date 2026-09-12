@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Car, Search, SlidersHorizontal, X } from "lucide-react";
-import { getJobs, getSignedPhotoUrl } from "@/lib/data";
+import { CarFront, CheckCircle2, PackageCheck, Search, SlidersHorizontal, Wrench, X } from "lucide-react";
+import { getJobs, getJobStatusCounts, getSignedPhotoUrl } from "@/lib/data";
 import { JOB_STATUSES, JOB_STATUS_LABELS, type JobStatus } from "@/lib/types";
-import { StatusBadge, STATUS_ACCENT } from "@/components/StatusBadge";
-import { buttonPrimary, buttonSecondary, card, input } from "@/lib/ui";
+import { StatCard } from "@/components/StatCard";
+import { buttonPrimary, buttonSecondary, card, input, inputBase, pageHero } from "@/lib/ui";
+import { JobCards } from "./JobCards";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -24,61 +25,104 @@ export default async function DashboardPage({
   const dateTo = first(params.to);
   const hasFilters = !!(plate || clientName || status || dateFrom || dateTo);
 
-  const jobs = await getJobs({
-    plate: plate || undefined,
-    clientName: clientName || undefined,
-    status: status || undefined,
-    dateFrom: dateFrom || undefined,
-    dateTo: dateTo || undefined,
-  });
+  const [jobs, counts] = await Promise.all([
+    getJobs({
+      plate: plate || undefined,
+      clientName: clientName || undefined,
+      status: status || undefined,
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
+    }),
+    getJobStatusCounts(),
+  ]);
 
-  const thumbnails = await Promise.all(
+  const jobsWithThumbnails = await Promise.all(
     jobs.map(async (job) => {
       const firstPhoto = job.photos[0];
-      if (!firstPhoto) return null;
+      if (!firstPhoto) return { ...job, thumbnailUrl: null };
       try {
-        return await getSignedPhotoUrl(firstPhoto.storage_path, 600);
+        return { ...job, thumbnailUrl: await getSignedPhotoUrl(firstPhoto.storage_path, 600) };
       } catch {
-        return null;
+        return { ...job, thumbnailUrl: null };
       }
     })
   );
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-          Ingresos
-        </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          {jobs.length} resultado{jobs.length === 1 ? "" : "s"}
-        </p>
+      <div className={pageHero}>
+        <div className="pointer-events-none absolute -right-8 -top-8 opacity-20">
+          <CarFront className="h-40 w-40" strokeWidth={1} />
+        </div>
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+              Ingresos
+            </h1>
+            <p className="mt-1 text-sm text-white/90 sm:text-base">
+              Todo lo que entró al taller, en un solo lugar.
+            </p>
+          </div>
+          <Link
+            href="/nuevo"
+            className="hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-orange-600 shadow-lg transition-transform hover:scale-105 sm:inline-flex"
+          >
+            + Nuevo ingreso
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard
+          icon={CarFront}
+          label="Ingresados"
+          value={counts.ingresado}
+          gradient="from-blue-500 to-indigo-500"
+        />
+        <StatCard
+          icon={Wrench}
+          label="En reparación"
+          value={counts.en_reparacion}
+          gradient="from-amber-500 to-orange-500"
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Listos"
+          value={counts.listo}
+          gradient="from-emerald-500 to-teal-500"
+        />
+        <StatCard
+          icon={PackageCheck}
+          label="Entregados"
+          value={counts.entregado}
+          gradient="from-neutral-400 to-neutral-500"
+        />
       </div>
 
       <form className={`${card} space-y-4`}>
-        <div className="flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+        <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-200">
           <SlidersHorizontal className="h-4 w-4 text-orange-600" />
           Filtros
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="relative col-span-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
               type="text"
               name="plate"
               defaultValue={plate}
               placeholder="Patente"
-              className={`${input} pl-9`}
+              className={`w-full py-2.5 pl-10 pr-4 ${inputBase}`}
             />
           </div>
           <div className="relative col-span-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
               type="text"
               name="client"
               defaultValue={clientName}
               placeholder="Cliente"
-              className={`${input} pl-9`}
+              className={`w-full py-2.5 pl-10 pr-4 ${inputBase}`}
             />
           </div>
           <select
@@ -98,13 +142,13 @@ export default async function DashboardPage({
               type="date"
               name="from"
               defaultValue={dateFrom}
-              className={`${input} px-2`}
+              className={`w-full px-2 py-2.5 ${inputBase}`}
             />
             <input
               type="date"
               name="to"
               defaultValue={dateTo}
-              className={`${input} px-2`}
+              className={`w-full px-2 py-2.5 ${inputBase}`}
             />
           </div>
         </div>
@@ -123,10 +167,10 @@ export default async function DashboardPage({
 
       {jobs.length === 0 ? (
         <div className={`${card} flex flex-col items-center gap-2 border-dashed py-14 text-center`}>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-500/10">
-            <Car className="h-6 w-6 text-orange-500" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25">
+            <CarFront className="h-7 w-7" />
           </div>
-          <p className="font-medium text-neutral-700 dark:text-neutral-200">
+          <p className="font-bold text-neutral-700 dark:text-neutral-200">
             {hasFilters ? "No hay ingresos que coincidan" : "Todavía no hay ingresos"}
           </p>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -136,47 +180,7 @@ export default async function DashboardPage({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((job, i) => (
-            <Link
-              key={job.id}
-              href={`/trabajo/${job.id}`}
-              className={`group flex gap-3 rounded-2xl border border-l-4 border-neutral-200 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 ${STATUS_ACCENT[job.status]}`}
-            >
-              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-                {thumbnails[i] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={thumbnails[i]!}
-                    alt={job.vehicle.plate}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-neutral-300 dark:text-neutral-600">
-                    <Car className="h-7 w-7" />
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="truncate font-bold text-neutral-900 dark:text-neutral-100">
-                    {job.vehicle.plate}
-                  </span>
-                  <StatusBadge status={job.status} />
-                </div>
-                <p className="truncate text-sm text-neutral-600 dark:text-neutral-300">
-                  {job.vehicle.brand} {job.vehicle.model}
-                </p>
-                <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
-                  {job.vehicle.client.name}
-                </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  {new Date(job.entry_date).toLocaleDateString("es-AR")}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <JobCards jobs={jobsWithThumbnails} />
       )}
     </div>
   );

@@ -4,7 +4,7 @@ import { useActionState, useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { compressImage } from "@/lib/image-compression";
 import { addPhotosAction, type ActionState } from "./actions";
-import { buttonSecondary } from "@/lib/ui";
+import { buttonPrimary, buttonSecondary } from "@/lib/ui";
 
 const initialState: ActionState = {};
 
@@ -51,7 +51,7 @@ export function AddPhotosForm({ jobId }: { jobId: string }) {
       <button
         type="submit"
         disabled={pending || compressing}
-        className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50"
+        className={buttonPrimary}
       >
         {compressing ? "Optimizando..." : pending ? "Subiendo..." : "Agregar fotos"}
       </button>

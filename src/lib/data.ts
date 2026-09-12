@@ -75,6 +75,24 @@ export async function getJobs(
   return (data ?? []) as unknown as JobWithRelations[];
 }
 
+export async function getJobStatusCounts(): Promise<Record<JobStatus, number>> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase.from("jobs").select("status");
+  if (error) throw error;
+
+  const counts: Record<JobStatus, number> = {
+    ingresado: 0,
+    en_reparacion: 0,
+    listo: 0,
+    entregado: 0,
+  };
+  for (const row of data ?? []) {
+    const status = row.status as JobStatus;
+    counts[status] = (counts[status] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export async function getJobById(
   id: string
 ): Promise<JobWithRelations | null> {

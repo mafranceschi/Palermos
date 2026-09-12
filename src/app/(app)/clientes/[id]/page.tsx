@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Car, ClipboardList, Mail, Phone, User } from "lucide-react";
+import { Car, ClipboardList, Mail, Phone } from "lucide-react";
 import { getClientById, getClientHistory } from "@/lib/data";
-import { StatusBadge, STATUS_ACCENT } from "@/components/StatusBadge";
-import { card, sectionLabel } from "@/lib/ui";
+import { StatusBadge, STATUS_TOP_ACCENT } from "@/components/StatusBadge";
+import { card, getAvatarGradient, getInitials, sectionLabel } from "@/lib/ui";
 
 export default async function ClientDetailPage({
   params,
@@ -18,33 +18,37 @@ export default async function ClientDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <div className={`flex items-start gap-3 ${card}`}>
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-700">
-          <User className="h-5 w-5" />
-        </span>
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-            {client.name}
-          </h1>
-          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {client.phone && (
-              <span className="flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5" />
-                {client.phone}
-              </span>
-            )}
-            {client.email && (
-              <span className="flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5" />
-                {client.email}
-              </span>
-            )}
-            {!client.phone && !client.email && <span>Sin datos de contacto</span>}
+      <div
+        className={`relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white shadow-lg sm:p-8 ${getAvatarGradient(client.name)}`}
+      >
+        <div className="flex items-center gap-4">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/20 text-2xl font-extrabold backdrop-blur-sm">
+            {getInitials(client.name)}
+          </span>
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+              {client.name}
+            </h1>
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/90">
+              {client.phone && (
+                <span className="flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5" />
+                  {client.phone}
+                </span>
+              )}
+              {client.email && (
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5" />
+                  {client.email}
+                </span>
+              )}
+              {!client.phone && !client.email && <span>Sin datos de contacto</span>}
+            </div>
           </div>
-          {client.notes && (
-            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{client.notes}</p>
-          )}
         </div>
+        {client.notes && (
+          <p className="mt-4 text-sm text-white/90">{client.notes}</p>
+        )}
       </div>
 
       <section className={`space-y-3 ${card}`}>
@@ -83,14 +87,17 @@ export default async function ClientDetailPage({
             Todavía no hay ingresos registrados.
           </p>
         ) : (
-          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+          <ul className="space-y-2">
             {jobs.map((job) => (
               <li key={job.id}>
                 <Link
                   href={`/trabajo/${job.id}`}
-                  className={`-mx-2 flex items-center justify-between gap-3 rounded-xl border-l-4 px-2 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800 ${STATUS_ACCENT[job.status]}`}
+                  className="flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-neutral-200/70 transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800"
                 >
-                  <div className="min-w-0">
+                  <div
+                    className={`h-full w-1.5 self-stretch bg-gradient-to-b ${STATUS_TOP_ACCENT[job.status]}`}
+                  />
+                  <div className="min-w-0 flex-1 py-2.5 pr-3">
                     <p className="font-semibold text-neutral-900 dark:text-neutral-100">
                       {job.vehicle.plate}
                     </p>
@@ -101,7 +108,9 @@ export default async function ClientDetailPage({
                       {new Date(job.entry_date).toLocaleDateString("es-AR")}
                     </p>
                   </div>
-                  <StatusBadge status={job.status} />
+                  <div className="pr-3">
+                    <StatusBadge status={job.status} />
+                  </div>
                 </Link>
               </li>
             ))}

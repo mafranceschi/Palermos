@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { updateStatusAction, type ActionState } from "./actions";
 import { JOB_STATUSES, JOB_STATUS_LABELS, type JobStatus } from "@/lib/types";
-import { buttonPrimary, input } from "@/lib/ui";
+import { buttonPrimary, inputBase } from "@/lib/ui";
 
 const initialState: ActionState = {};
 
@@ -21,7 +21,7 @@ export function StatusForm({
 
   return (
     <form action={formAction} className="flex flex-wrap items-center gap-2">
-      <select name="status" defaultValue={currentStatus} className={`${input} w-auto`}>
+      <select name="status" defaultValue={currentStatus} className={`w-auto ${inputBase}`}>
         {JOB_STATUSES.map((s) => (
           <option key={s} value={s}>
             {JOB_STATUS_LABELS[s]}
