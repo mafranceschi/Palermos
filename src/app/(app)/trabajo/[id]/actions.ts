@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { addPhoto, updateJob, uploadJobPhoto } from "@/lib/data";
+import { getErrorMessage } from "@/lib/errors";
 import { JOB_STATUSES, type JobStatus } from "@/lib/types";
 
 export type ActionState = { error?: string };
@@ -21,10 +22,14 @@ export async function updateStatusAction(
     return { error: "Estado inválido." };
   }
 
-  await updateJob(jobId, {
-    status,
-    exit_date: status === "entregado" ? new Date().toISOString() : null,
-  });
+  try {
+    await updateJob(jobId, {
+      status,
+      exit_date: status === "entregado" ? new Date().toISOString() : null,
+    });
+  } catch (err) {
+    return { error: `No se pudo actualizar el estado: ${getErrorMessage(err)}` };
+  }
 
   revalidatePath(`/trabajo/${jobId}`);
   revalidatePath("/");
@@ -36,11 +41,15 @@ export async function updateDetailsAction(
   _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  await updateJob(jobId, {
-    client_request: str(formData, "client_request"),
-    work_description: str(formData, "work_description"),
-    notes: str(formData, "notes"),
-  });
+  try {
+    await updateJob(jobId, {
+      client_request: str(formData, "client_request"),
+      work_description: str(formData, "work_description"),
+      notes: str(formData, "notes"),
+    });
+  } catch (err) {
+    return { error: `No se pudo guardar: ${getErrorMessage(err)}` };
+  }
 
   revalidatePath(`/trabajo/${jobId}`);
   return {};
@@ -55,9 +64,13 @@ export async function addPhotosAction(
     (item): item is File => item instanceof File && item.size > 0
   );
 
-  for (const photo of photos) {
-    const path = await uploadJobPhoto(jobId, photo);
-    await addPhoto(jobId, path);
+  try {
+    for (const photo of photos) {
+      const path = await uploadJobPhoto(jobId, photo);
+      await addPhoto(jobId, path);
+    }
+  } catch (err) {
+    return { error: `No se pudieron subir las fotos: ${getErrorMessage(err)}` };
   }
 
   revalidatePath(`/trabajo/${jobId}`);

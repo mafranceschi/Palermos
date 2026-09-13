@@ -9,6 +9,7 @@ import {
   findVehicleByPlate,
   uploadJobPhoto,
 } from "@/lib/data";
+import { getErrorMessage } from "@/lib/errors";
 
 export type CreateJobState = { error?: string };
 
@@ -29,58 +30,67 @@ export async function createJobAction(
   const clientRequest = str(formData, "client_request");
   const workDescription = str(formData, "work_description");
 
-  let vehicleId: string;
+  let jobId: string;
 
-  const existingVehicle = await findVehicleByPlate(plate);
+  try {
+    let vehicleId: string;
 
-  if (existingVehicle) {
-    vehicleId = existingVehicle.id;
-  } else {
-    const existingClientId = str(formData, "client_id");
-    let clientId = existingClientId || undefined;
+    const existingVehicle = await findVehicleByPlate(plate);
 
-    if (!clientId) {
-      const name = str(formData, "client_name");
-      if (!name) {
-        return {
-          error:
-            "Este vehículo es nuevo: completá el nombre del cliente (o seleccioná uno existente).",
-        };
+    if (existingVehicle) {
+      vehicleId = existingVehicle.id;
+    } else {
+      const existingClientId = str(formData, "client_id");
+      let clientId = existingClientId || undefined;
+
+      if (!clientId) {
+        const name = str(formData, "client_name");
+        if (!name) {
+          return {
+            error:
+              "Este vehículo es nuevo: completá el nombre del cliente (o seleccioná uno existente).",
+          };
+        }
+        const client = await createClient({
+          name,
+          phone: str(formData, "client_phone"),
+          email: str(formData, "client_email"),
+        });
+        clientId = client.id;
       }
-      const client = await createClient({
-        name,
-        phone: str(formData, "client_phone"),
-        email: str(formData, "client_email"),
+
+      const yearRaw = str(formData, "year");
+      const vehicle = await createVehicle({
+        client_id: clientId,
+        plate,
+        brand: str(formData, "brand"),
+        model: str(formData, "model"),
+        color: str(formData, "color"),
+        year: yearRaw ? Number(yearRaw) : undefined,
       });
-      clientId = client.id;
+      vehicleId = vehicle.id;
     }
 
-    const yearRaw = str(formData, "year");
-    const vehicle = await createVehicle({
-      client_id: clientId,
-      plate,
-      brand: str(formData, "brand"),
-      model: str(formData, "model"),
-      color: str(formData, "color"),
-      year: yearRaw ? Number(yearRaw) : undefined,
+    const job = await createJob({
+      vehicle_id: vehicleId,
+      client_request: clientRequest,
+      work_description: workDescription,
     });
-    vehicleId = vehicle.id;
+    jobId = job.id;
+
+    const photos = formData.getAll("photos").filter(
+      (item): item is File => item instanceof File && item.size > 0
+    );
+
+    for (const photo of photos) {
+      const path = await uploadJobPhoto(jobId, photo);
+      await addPhoto(jobId, path);
+    }
+  } catch (err) {
+    return {
+      error: `No se pudo guardar el ingreso: ${getErrorMessage(err)}`,
+    };
   }
 
-  const job = await createJob({
-    vehicle_id: vehicleId,
-    client_request: clientRequest,
-    work_description: workDescription,
-  });
-
-  const photos = formData.getAll("photos").filter(
-    (item): item is File => item instanceof File && item.size > 0
-  );
-
-  for (const photo of photos) {
-    const path = await uploadJobPhoto(job.id, photo);
-    await addPhoto(job.id, path);
-  }
-
-  redirect(`/trabajo/${job.id}`);
+  redirect(`/trabajo/${jobId}`);
 }
