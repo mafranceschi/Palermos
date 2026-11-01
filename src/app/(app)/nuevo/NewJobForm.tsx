@@ -5,7 +5,7 @@ import { Camera, Car, CheckCircle2, User, Wrench, X } from "lucide-react";
 import { compressImage } from "@/lib/image-compression";
 import { createJobAction, type CreateJobState } from "./actions";
 import type { Client, Vehicle } from "@/lib/types";
-import { card, input, sectionLabel } from "@/lib/ui";
+import { card, input, sectionIcon, sectionLabel } from "@/lib/ui";
 
 const initialState: CreateJobState = {};
 
@@ -117,7 +117,9 @@ export function NewJobForm() {
     <form action={formAction} className="space-y-5">
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>
-          <Car className="h-4 w-4 text-orange-600" />
+          <span className={sectionIcon}>
+            <Car />
+          </span>
           Vehículo
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -156,7 +158,7 @@ export function NewJobForm() {
         </div>
 
         {vehicleStatus === "found" && foundVehicle && (
-          <p className="flex items-start gap-2 rounded-xl bg-blue-50 px-3 py-2.5 text-sm text-blue-800 dark:bg-blue-500/10 dark:text-blue-300">
+          <p className="flex items-start gap-2 rounded-xl bg-navy-50 px-3 py-2.5 text-sm text-navy-800 ring-1 ring-inset ring-navy-100 dark:bg-navy-500/10 dark:text-navy-200 dark:ring-navy-400/20">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
               Vehículo existente de <strong>{foundVehicle.client.name}</strong>.
@@ -169,7 +171,9 @@ export function NewJobForm() {
       {vehicleStatus !== "found" && (
         <section className={`space-y-3 ${card}`}>
           <h2 className={sectionLabel}>
-            <User className="h-4 w-4 text-orange-600" />
+            <span className={sectionIcon}>
+              <User />
+            </span>
             Cliente
           </h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -250,7 +254,9 @@ export function NewJobForm() {
 
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>
-          <Wrench className="h-4 w-4 text-orange-600" />
+          <span className={sectionIcon}>
+            <Wrench />
+          </span>
           Trabajo
         </h2>
         <textarea
@@ -269,12 +275,14 @@ export function NewJobForm() {
 
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>
-          <Camera className="h-4 w-4 text-orange-600" />
+          <span className={sectionIcon}>
+            <Camera />
+          </span>
           Fotos
         </h2>
 
-        <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center transition-colors hover:border-orange-400 hover:bg-orange-50/50 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:border-orange-500/60 dark:hover:bg-orange-500/5">
-          <Camera className="h-6 w-6 text-neutral-400" />
+        <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl group border-2 border-dashed border-neutral-300 bg-neutral-50 px-4 py-6 text-center transition-colors hover:border-orange-400 hover:bg-orange-50/50 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:border-orange-500/60 dark:hover:bg-orange-500/5">
+          <Camera className="h-6 w-6 text-neutral-400 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:text-orange-500" />
           <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
             {compressing ? "Optimizando fotos…" : "Tocá para sacar o subir fotos"}
           </span>
@@ -305,7 +313,7 @@ export function NewJobForm() {
                 <button
                   type="button"
                   onClick={() => removePhoto(i)}
-                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white shadow-sm transition-transform hover:scale-110"
+                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-navy-900 text-white shadow-sm transition-transform hover:scale-110 hover:bg-orange-500"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -324,7 +332,7 @@ export function NewJobForm() {
       <button
         type="submit"
         disabled={pending || compressing}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/35 hover:brightness-105 active:scale-[0.98] disabled:opacity-50"
+        className="shine inline-flex w-full items-center justify-center gap-2 rounded-full bg-orange-500 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/30 transition-all duration-200 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-500/40 active:scale-[0.98] disabled:opacity-50"
       >
         {pending ? "Guardando..." : "Guardar ingreso"}
       </button>

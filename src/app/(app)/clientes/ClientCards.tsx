@@ -12,21 +12,21 @@ export function ClientCards({ clients }: { clients: ClientWithVehicleCount[] }) 
       {clients.map((client, i) => (
         <motion.div
           key={client.id}
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: Math.min(i * 0.05, 0.4) }}
+          transition={{ duration: 0.45, delay: Math.min(i * 0.05, 0.4), ease: [0.22, 1, 0.36, 1] }}
         >
           <Link
             href={`/clientes/${client.id}`}
-            className="group flex items-start gap-3 rounded-3xl border border-neutral-200/70 bg-white p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
+            className="group flex items-start gap-3 rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-[0_1px_2px_rgb(21_38_74/0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-navy-900/10 dark:border-white/5 dark:bg-neutral-900 dark:hover:border-orange-500/30"
           >
             <span
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-extrabold text-white shadow-sm ${getAvatarGradient(client.name)}`}
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-sm font-extrabold text-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3 ${getAvatarGradient(client.name)}`}
             >
               {getInitials(client.name)}
             </span>
             <div className="min-w-0 flex-1 space-y-1">
-              <p className="truncate font-bold text-neutral-900 dark:text-neutral-100">
+              <p className="truncate font-bold text-navy-900 transition-colors group-hover:text-orange-600 dark:text-neutral-100 dark:group-hover:text-orange-400">
                 {client.name}
               </p>
               {client.phone && (

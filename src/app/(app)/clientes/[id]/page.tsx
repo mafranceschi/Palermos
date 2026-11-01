@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Car, ClipboardList, Mail, Phone } from "lucide-react";
 import { getClientById, getClientHistory } from "@/lib/data";
 import { StatusBadge, STATUS_TOP_ACCENT } from "@/components/StatusBadge";
-import { card, getAvatarGradient, getInitials, sectionLabel } from "@/lib/ui";
+import { card, getAvatarGradient, getInitials, pageHero, sectionIcon, sectionLabel } from "@/lib/ui";
+import { HeroDecor } from "@/components/HeroDecor";
 
 export default async function ClientDetailPage({
   params,
@@ -18,18 +19,19 @@ export default async function ClientDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <div
-        className={`relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white shadow-lg sm:p-8 ${getAvatarGradient(client.name)}`}
-      >
-        <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/20 text-2xl font-extrabold backdrop-blur-sm">
+      <div className={pageHero}>
+        <HeroDecor />
+        <div className="relative flex items-center gap-4">
+          <span
+            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-2xl font-extrabold shadow-lg ring-2 ring-white/20 ${getAvatarGradient(client.name)}`}
+          >
             {getInitials(client.name)}
           </span>
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
               {client.name}
             </h1>
-            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/90">
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-navy-100/90">
               {client.phone && (
                 <span className="flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5" />
@@ -47,13 +49,15 @@ export default async function ClientDetailPage({
           </div>
         </div>
         {client.notes && (
-          <p className="mt-4 text-sm text-white/90">{client.notes}</p>
+          <p className="relative mt-4 text-sm text-navy-100/90">{client.notes}</p>
         )}
       </div>
 
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>
-          <Car className="h-4 w-4 text-orange-600" />
+          <span className={sectionIcon}>
+            <Car />
+          </span>
           Vehículos ({vehicles.length})
         </h2>
         {vehicles.length === 0 ? (
@@ -63,9 +67,9 @@ export default async function ClientDetailPage({
             {vehicles.map((v) => (
               <span
                 key={v.id}
-                className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                className="inline-flex items-center gap-1.5 rounded-full bg-navy-50 px-3 py-1.5 text-sm text-neutral-700 ring-1 ring-inset ring-navy-100 dark:bg-navy-500/10 dark:text-neutral-300 dark:ring-navy-400/20"
               >
-                <span className="font-semibold text-neutral-900 dark:text-neutral-100">{v.plate}</span>
+                <span className="font-mono font-bold tracking-wide text-navy-800 dark:text-white">{v.plate}</span>
                 {(v.brand || v.model) && (
                   <span className="text-neutral-400">
                     · {[v.brand, v.model].filter(Boolean).join(" ")}
@@ -79,7 +83,9 @@ export default async function ClientDetailPage({
 
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>
-          <ClipboardList className="h-4 w-4 text-orange-600" />
+          <span className={sectionIcon}>
+            <ClipboardList />
+          </span>
           Historial de trabajos ({jobs.length})
         </h2>
         {jobs.length === 0 ? (
@@ -92,13 +98,13 @@ export default async function ClientDetailPage({
               <li key={job.id}>
                 <Link
                   href={`/trabajo/${job.id}`}
-                  className="flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-neutral-200/70 transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800"
+                  className="group flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-neutral-200/80 transition-all duration-300 hover:translate-x-1 hover:border-orange-200 hover:bg-orange-50/40 dark:border-white/5 dark:hover:border-orange-500/30 dark:hover:bg-white/5"
                 >
                   <div
                     className={`h-full w-1.5 self-stretch bg-gradient-to-b ${STATUS_TOP_ACCENT[job.status]}`}
                   />
                   <div className="min-w-0 flex-1 py-2.5 pr-3">
-                    <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                    <p className="font-mono font-bold tracking-wide text-navy-900 dark:text-white">
                       {job.vehicle.plate}
                     </p>
                     <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">

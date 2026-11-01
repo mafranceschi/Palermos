@@ -48,13 +48,13 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             key={photo.id}
             type="button"
             onClick={() => setOpenIndex(i)}
-            className="group aspect-square overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800"
+            className="group aspect-square overflow-hidden rounded-xl bg-neutral-100 ring-orange-400 ring-offset-2 transition-shadow hover:ring-2 dark:bg-neutral-800 dark:ring-offset-neutral-900"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={photo.url}
               alt={photo.caption ?? ""}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           </button>
         ))}
@@ -62,7 +62,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/90 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/90 p-4 backdrop-blur-md"
           onClick={(e) => {
             if (e.target === e.currentTarget) setOpenIndex(null);
           }}

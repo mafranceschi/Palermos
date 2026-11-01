@@ -3,7 +3,10 @@ import { CarFront, CheckCircle2, PackageCheck, Search, SlidersHorizontal, Wrench
 import { getJobs, getJobStatusCounts, getSignedPhotoUrl } from "@/lib/data";
 import { JOB_STATUSES, JOB_STATUS_LABELS, type JobStatus } from "@/lib/types";
 import { StatCard } from "@/components/StatCard";
-import { buttonPrimary, buttonSecondary, card, input, inputBase, pageHero } from "@/lib/ui";
+import { HeroDecor } from "@/components/HeroDecor";
+import { HeroHeading } from "@/components/HeroHeading";
+import { Stagger, StaggerItem } from "@/components/motion";
+import { buttonPrimary, buttonSecondary, card, input, inputBase, pageHero, sectionIcon } from "@/lib/ui";
 import { JobCards } from "./JobCards";
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -51,60 +54,45 @@ export default async function DashboardPage({
   return (
     <div className="space-y-6">
       <div className={pageHero}>
-        <div className="pointer-events-none absolute -right-8 -top-8 opacity-20">
-          <CarFront className="h-40 w-40" strokeWidth={1} />
-        </div>
+        <HeroDecor icon={CarFront} />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Ingresos
-            </h1>
-            <p className="mt-1 text-sm text-white/90 sm:text-base">
-              Todo lo que entró al taller, en un solo lugar.
-            </p>
-          </div>
+          <HeroHeading
+            eyebrow="Taller Palermo"
+            title="Ingresos"
+            subtitle="Todo lo que entró al taller, en un solo lugar."
+          />
           <Link
             href="/nuevo"
-            className="hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-orange-600 shadow-lg transition-transform hover:scale-105 sm:inline-flex"
+            className="shine hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-navy-800 shadow-lg shadow-navy-950/30 transition-all hover:-translate-y-0.5 hover:text-orange-600 sm:inline-flex"
           >
             + Nuevo ingreso
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard
-          icon={CarFront}
-          label="Ingresados"
-          value={counts.ingresado}
-          gradient="from-blue-500 to-indigo-500"
-        />
-        <StatCard
-          icon={Wrench}
-          label="En reparación"
-          value={counts.en_reparacion}
-          gradient="from-amber-500 to-orange-500"
-        />
-        <StatCard
-          icon={CheckCircle2}
-          label="Listos"
-          value={counts.listo}
-          gradient="from-emerald-500 to-teal-500"
-        />
-        <StatCard
-          icon={PackageCheck}
-          label="Entregados"
-          value={counts.entregado}
-          gradient="from-neutral-400 to-neutral-500"
-        />
-      </div>
+      <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StaggerItem>
+          <StatCard icon={CarFront} label="Ingresados" value={counts.ingresado} tone="navy" />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard icon={Wrench} label="En reparación" value={counts.en_reparacion} tone="orange" />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard icon={CheckCircle2} label="Listos" value={counts.listo} tone="emerald" />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard icon={PackageCheck} label="Entregados" value={counts.entregado} tone="neutral" />
+        </StaggerItem>
+      </Stagger>
 
       <form className={`${card} space-y-4`}>
-        <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-200">
-          <SlidersHorizontal className="h-4 w-4 text-orange-600" />
+        <div className="flex items-center gap-2 text-sm font-bold text-navy-900 dark:text-neutral-100">
+          <span className={sectionIcon}>
+            <SlidersHorizontal />
+          </span>
           Filtros
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="relative col-span-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
@@ -128,7 +116,7 @@ export default async function DashboardPage({
           <select
             name="status"
             defaultValue={status}
-            className={`${input} col-span-1`}
+            className={`${input} col-span-2 sm:col-span-1`}
           >
             <option value="">Todos los estados</option>
             {JOB_STATUSES.map((s) => (
@@ -137,18 +125,20 @@ export default async function DashboardPage({
               </option>
             ))}
           </select>
-          <div className="col-span-1 flex gap-2">
+          <div className="col-span-2 grid grid-cols-2 gap-2 sm:col-span-3">
             <input
               type="date"
               name="from"
               defaultValue={dateFrom}
-              className={`w-full px-2 py-2.5 ${inputBase}`}
+              aria-label="Desde"
+              className={`w-full min-w-0 px-3 py-2.5 ${inputBase}`}
             />
             <input
               type="date"
               name="to"
               defaultValue={dateTo}
-              className={`w-full px-2 py-2.5 ${inputBase}`}
+              aria-label="Hasta"
+              className={`w-full min-w-0 px-3 py-2.5 ${inputBase}`}
             />
           </div>
         </div>
@@ -167,10 +157,10 @@ export default async function DashboardPage({
 
       {jobs.length === 0 ? (
         <div className={`${card} flex flex-col items-center gap-2 border-dashed py-14 text-center`}>
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-navy-600 to-navy-900 text-orange-400 shadow-lg shadow-navy-900/25">
             <CarFront className="h-7 w-7" />
           </div>
-          <p className="font-bold text-neutral-700 dark:text-neutral-200">
+          <p className="font-bold text-navy-900 dark:text-neutral-100">
             {hasFilters ? "No hay ingresos que coincidan" : "Todavía no hay ingresos"}
           </p>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">

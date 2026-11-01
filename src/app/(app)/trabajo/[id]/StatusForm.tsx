@@ -21,7 +21,7 @@ export function StatusForm({
 
   return (
     <form action={formAction} className="flex flex-wrap items-center gap-2">
-      <select name="status" defaultValue={currentStatus} className={`w-auto ${inputBase}`}>
+      <select name="status" defaultValue={currentStatus} className={`w-auto py-2.5 pl-4 pr-9 ${inputBase}`}>
         {JOB_STATUSES.map((s) => (
           <option key={s} value={s}>
             {JOB_STATUS_LABELS[s]}
