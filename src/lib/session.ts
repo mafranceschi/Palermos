@@ -34,25 +34,33 @@ async function sign(value: string): Promise<string> {
 export const SESSION_COOKIE_NAME = COOKIE_NAME;
 export const SESSION_MAX_AGE_SECONDS = SESSION_DURATION_MS / 1000;
 
-export async function createSessionToken(): Promise<string> {
+// Formato del token: "<id de usuario>:<vencimiento>.<firma>". La firma cubre
+// ambos, así que no se puede cambiar de usuario editando la cookie. El rol no
+// va en el token: se lee de la base en cada request (ver lib/auth.ts), así un
+// cambio de rol o un usuario borrado se aplica al instante.
+export async function createSessionToken(userId: string): Promise<string> {
   const expiresAt = Date.now() + SESSION_DURATION_MS;
-  const payload = `${expiresAt}`;
+  const payload = `${userId}:${expiresAt}`;
   const signature = await sign(payload);
   return `${payload}.${signature}`;
 }
 
+// Devuelve el id de usuario de una sesión válida, o null.
 export async function verifySessionToken(
   token: string | undefined
-): Promise<boolean> {
-  if (!token) return false;
+): Promise<string | null> {
+  if (!token) return null;
   const [payload, signature] = token.split(".");
-  if (!payload || !signature) return false;
+  if (!payload || !signature) return null;
 
   const expected = await sign(payload);
-  if (expected !== signature) return false;
+  if (expected !== signature) return null;
 
-  const expiresAt = Number(payload);
-  if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return false;
+  const [userId, expiresRaw] = payload.split(":");
+  if (!userId || !expiresRaw) return null;
 
-  return true;
+  const expiresAt = Number(expiresRaw);
+  if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return null;
+
+  return userId;
 }

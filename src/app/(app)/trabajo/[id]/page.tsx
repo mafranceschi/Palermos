@@ -10,6 +10,9 @@ import { StatusForm } from "./StatusForm";
 import { DetailsForm } from "./DetailsForm";
 import { AddPhotosForm } from "./AddPhotosForm";
 import { PhotoGallery } from "./PhotoGallery";
+import { deleteJobAction } from "./actions";
+import { isAdmin } from "@/lib/auth";
+import { DeleteButton } from "@/components/DeleteButton";
 
 export default async function JobDetailPage({
   params,
@@ -20,7 +23,7 @@ export default async function JobDetailPage({
   const job = await getJobById(id);
   if (!job) notFound();
 
-  const photos = await getSignedPhotoUrls(job.photos);
+  const [photos, admin] = await Promise.all([getSignedPhotoUrls(job.photos), isAdmin()]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -93,6 +96,27 @@ export default async function JobDetailPage({
         <PhotoGallery photos={photos} />
         <AddPhotosForm jobId={job.id} />
       </section>
+
+      {admin && (
+        <div className="flex justify-end pt-2">
+          <DeleteButton
+            action={deleteJobAction.bind(null, job.id)}
+            label="Eliminar trabajo"
+            confirmTitle={`¿Eliminar el trabajo de ${job.vehicle.plate}?`}
+            confirmText={
+              <p>
+                Se borra el trabajo
+                {photos.length === 0
+                  ? ""
+                  : photos.length === 1
+                    ? " y su foto"
+                    : ` y sus ${photos.length} fotos`}{" "}
+                de forma permanente. El vehículo y el cliente se mantienen.
+              </p>
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }

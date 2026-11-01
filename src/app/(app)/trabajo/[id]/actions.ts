@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { addPhoto, updateJob, uploadJobPhoto } from "@/lib/data";
+import { redirect } from "next/navigation";
+import { addPhoto, deleteJob, updateJob, uploadJobPhoto } from "@/lib/data";
+import { isAdmin } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { JOB_STATUSES, type JobStatus } from "@/lib/types";
 
@@ -76,4 +78,20 @@ export async function addPhotosAction(
 
   revalidatePath(`/trabajo/${jobId}`);
   return {};
+}
+
+export async function deleteJobAction(jobId: string): Promise<ActionState> {
+  if (!(await isAdmin())) {
+    return { error: "Solo un admin puede eliminar trabajos." };
+  }
+
+  try {
+    await deleteJob(jobId);
+  } catch (err) {
+    return { error: `No se pudo eliminar el trabajo: ${getErrorMessage(err)}` };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/clientes", "layout");
+  redirect("/");
 }

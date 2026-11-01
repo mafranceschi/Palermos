@@ -6,6 +6,9 @@ import { getClientById, getClientHistory } from "@/lib/data";
 import { StatusBadge, STATUS_TOP_ACCENT } from "@/components/StatusBadge";
 import { card, getAvatarGradient, getInitials, pageHero, sectionIcon, sectionLabel } from "@/lib/ui";
 import { HeroDecor } from "@/components/HeroDecor";
+import { DeleteButton } from "@/components/DeleteButton";
+import { isAdmin } from "@/lib/auth";
+import { deleteClientAction } from "./actions";
 
 export default async function ClientDetailPage({
   params,
@@ -16,7 +19,7 @@ export default async function ClientDetailPage({
   const client = await getClientById(id);
   if (!client) notFound();
 
-  const { vehicles, jobs } = await getClientHistory(id);
+  const [{ vehicles, jobs }, admin] = await Promise.all([getClientHistory(id), isAdmin()]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -132,6 +135,29 @@ export default async function ClientDetailPage({
           </ul>
         )}
       </section>
+
+      {admin && (
+        <div className="flex justify-end pt-2">
+          <DeleteButton
+            action={deleteClientAction.bind(null, client.id)}
+            label="Eliminar cliente"
+            confirmTitle={`¿Eliminar a ${client.name}?`}
+            confirmText={
+              <p>
+                Se borra el cliente junto con{" "}
+                <strong>
+                  {vehicles.length} vehículo{vehicles.length === 1 ? "" : "s"}
+                </strong>{" "}
+                y{" "}
+                <strong>
+                  {jobs.length} trabajo{jobs.length === 1 ? "" : "s"}
+                </strong>{" "}
+                con todas sus fotos. No se puede deshacer.
+              </p>
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }

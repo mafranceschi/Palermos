@@ -3,19 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutGrid, Users } from "lucide-react";
+import { LayoutGrid, ShieldCheck, Users } from "lucide-react";
 
 const links = [
   { href: "/", label: "Ingresos", icon: LayoutGrid },
   { href: "/clientes", label: "Clientes", icon: Users },
 ];
 
-export function NavLinks() {
+const adminLinks = [{ href: "/usuarios", label: "Usuarios", icon: ShieldCheck }];
+
+export function NavLinks({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
 
   return (
     <>
-      {links.map(({ href, label, icon: Icon }) => {
+      {[...links, ...(isAdmin ? adminLinks : [])].map(({ href, label, icon: Icon }) => {
         const active =
           href === "/" ? pathname === "/" : pathname.startsWith(href);
         return (

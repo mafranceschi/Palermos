@@ -4,8 +4,15 @@ import { logout } from "@/app/logout/actions";
 import { BrandMark, BrandWordmark } from "@/components/BrandMark";
 import { NavLinks } from "./NavLinks";
 import { buttonPrimary } from "@/lib/ui";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth";
+import { ROLE_LABELS } from "@/lib/users";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
+  // Cookie válida pero el usuario fue borrado: vuelve al login.
+  if (!user) redirect("/login");
+
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <header className="sticky top-0 z-20 bg-navy-900/95 shadow-lg shadow-navy-950/20 backdrop-blur-md supports-[backdrop-filter]:bg-navy-900/85">
@@ -20,12 +27,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </span>
             <BrandWordmark />
           </Link>
+          <span
+            className={`hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset lg:inline-flex ${
+              user.role === "admin"
+                ? "bg-orange-500/15 text-orange-200 ring-orange-400/30"
+                : "bg-white/10 text-navy-100 ring-white/15"
+            }`}
+            title={ROLE_LABELS[user.role]}
+          >
+            {user.username}
+            <span className="uppercase tracking-wide opacity-70">· {ROLE_LABELS[user.role]}</span>
+          </span>
+          <div className="flex-1" />
 
           <nav className="flex items-center gap-1 sm:gap-2">
-            <NavLinks />
+            <NavLinks isAdmin={user.role === "admin"} />
             <Link href="/nuevo" className={`ml-1 ${buttonPrimary}`}>
               <Plus className="h-4 w-4" strokeWidth={2.5} />
-              <span className="hidden sm:inline">Nuevo ingreso</span>
+              <span className="hidden whitespace-nowrap sm:inline">Nuevo ingreso</span>
             </Link>
             <form action={logout}>
               <button

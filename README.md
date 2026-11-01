@@ -8,8 +8,9 @@ reparación → Listo → Entregado) y búsqueda/filtro de ingresos.
 
 - **Next.js** (App Router) + TypeScript + Tailwind CSS
 - **Supabase**: base de datos Postgres + Storage para las fotos
-- Login simple compartido (una sola contraseña de taller), sin gestión de
-  usuarios individuales
+- Login con usuario y contraseña guardados en la base (tabla `app_users`,
+  contraseñas hasheadas con scrypt). Dos roles: **admin** (puede todo,
+  incluido borrar) y **solo lectura** (ve, carga y edita, pero no borra)
 - Las fotos se comprimen y convierten a WebP en el navegador antes de subirse,
   para no consumir espacio de storage innecesariamente
 
@@ -20,8 +21,12 @@ reparación → Listo → Entregado) y búsqueda/filtro de ingresos.
 2. Andá a **SQL Editor** y ejecutá, en orden, el contenido de:
    - `supabase/migrations/0001_init.sql`
    - `supabase/migrations/0002_storage.sql`
-   Esto crea las tablas (`clients`, `vehicles`, `jobs`, `photos`) y el bucket
-   privado de Storage `job-photos` donde se guardan las fotos.
+   - `supabase/migrations/0003_fix_set_updated_at_search_path.sql`
+   - `supabase/migrations/0004_delete_functions.sql`
+   - `supabase/migrations/0005_app_users.sql`
+   Esto crea las tablas (`clients`, `vehicles`, `jobs`, `photos`, `app_users`),
+   las funciones de borrado y el bucket privado de Storage `job-photos` donde
+   se guardan las fotos.
 3. Andá a **Project Settings → API** y copiá:
    - **Project URL** → variable `SUPABASE_URL`
    - **service_role key** (no la `anon` key) → variable
@@ -43,7 +48,6 @@ cp .env.example .env.local
 ```
 SUPABASE_URL=...
 SUPABASE_SERVICE_ROLE_KEY=...
-APP_PASSWORD=la-contraseña-que-va-a-usar-el-taller
 SESSION_SECRET=un-string-random-largo (podés generarlo con: openssl rand -hex 32)
 ```
 
@@ -54,14 +58,15 @@ npm install
 npm run dev
 ```
 
-Abrí [http://localhost:3000](http://localhost:3000) — te va a pedir la
-contraseña definida en `APP_PASSWORD`.
+Abrí [http://localhost:3000](http://localhost:3000). La primera vez, si no hay
+ningún usuario en la base, te pide crear el usuario administrador. Después, los
+demás usuarios se crean desde la pantalla **Usuarios** (solo admin).
 
 ## 4. Deploy en Vercel
 
 1. Importá el repositorio en [vercel.com](https://vercel.com/new).
 2. Cargá las mismas variables de entorno (`SUPABASE_URL`,
-   `SUPABASE_SERVICE_ROLE_KEY`, `APP_PASSWORD`, `SESSION_SECRET`) en
+   `SUPABASE_SERVICE_ROLE_KEY`, `SESSION_SECRET`) en
    **Project Settings → Environment Variables**.
 3. Deploy. Cada push a la rama principal despliega automáticamente.
 4. Desde el celular, abrí la URL en el navegador y usá "Agregar a pantalla de
@@ -71,18 +76,20 @@ contraseña definida en `APP_PASSWORD`.
 
 ```
 src/app/(app)/          páginas protegidas por login (listado, nuevo ingreso, detalle, cliente)
-src/app/login/          página y server action de login
+src/app/login/          login y alta del primer admin
+src/app/(app)/usuarios/ gestión de usuarios (solo admin)
 src/app/api/            endpoints usados por los formularios (búsqueda de clientes, lookup de patente)
 src/lib/data.ts         acceso a datos (Supabase): clientes, vehículos, trabajos, fotos
 src/lib/image-compression.ts  compresión de fotos en el navegador (resize + WebP)
 src/lib/session.ts      firma/verificación de la cookie de sesión
+src/lib/users.ts        usuarios y roles (tabla app_users)
+src/lib/auth.ts         usuario de la sesión actual / chequeo de admin
 supabase/migrations/    esquema SQL de la base de datos
 ```
 
 ## Próximos pasos posibles
 
-- Reemplazar el login compartido por usuarios individuales (Supabase Auth) si
-  el taller quiere saber quién cargó cada ingreso.
+- Registrar qué usuario cargó o modificó cada ingreso.
 - Generar los tipos de la base de datos con `supabase gen types typescript`
   para tipar el cliente de Supabase en vez de castear manualmente.
 - Agregar presupuesto/costo por trabajo si se necesita un registro económico.

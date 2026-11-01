@@ -342,3 +342,31 @@ export async function getSignedPhotoUrls(
     }))
   );
 }
+
+// Borra del bucket los archivos de fotos de registros ya eliminados. Si falla,
+// solo quedan archivos huérfanos en Storage (los datos ya no los referencian),
+// así que no se corta el borrado por esto.
+async function removePhotoFiles(paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.storage.from(PHOTOS_BUCKET).remove(paths);
+  if (error) console.error("No se pudieron borrar fotos de Storage:", error);
+}
+
+// Borra el trabajo y sus fotos (base + Storage). El vehículo y el cliente quedan.
+export async function deleteJob(jobId: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase.rpc("delete_job", { p_job_id: jobId });
+  if (error) throw error;
+  await removePhotoFiles((data as string[] | null) ?? []);
+}
+
+// Borra el cliente con todos sus vehículos, trabajos y fotos (base + Storage).
+export async function deleteClient(clientId: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase.rpc("delete_client", {
+    p_client_id: clientId,
+  });
+  if (error) throw error;
+  await removePhotoFiles((data as string[] | null) ?? []);
+}
