@@ -8,7 +8,7 @@ import { NewJobForm } from "./NewJobForm";
 export default function NuevoIngresoPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <div className="-mb-2">
+      <div>
         <BackButton fallbackHref={"/"} />
       </div>
       <div className={pageHero}>

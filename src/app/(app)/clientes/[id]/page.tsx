@@ -20,7 +20,7 @@ export default async function ClientDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <div className="-mb-2">
+      <div>
         <BackButton fallbackHref={"/clientes"} />
       </div>
       <div className={pageHero}>

@@ -24,7 +24,7 @@ export default async function JobDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <div className="-mb-2">
+      <div>
         <BackButton fallbackHref={"/"} />
       </div>
       <div className={pageHero}>

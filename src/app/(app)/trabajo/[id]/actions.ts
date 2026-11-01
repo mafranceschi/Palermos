@@ -5,7 +5,8 @@ import { addPhoto, updateJob, uploadJobPhoto } from "@/lib/data";
 import { getErrorMessage } from "@/lib/errors";
 import { JOB_STATUSES, type JobStatus } from "@/lib/types";
 
-export type ActionState = { error?: string };
+// savedAt: marca de tiempo del último guardado OK, para mostrar "Guardado".
+export type ActionState = { error?: string; savedAt?: number };
 
 function str(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -33,7 +34,7 @@ export async function updateStatusAction(
 
   revalidatePath(`/trabajo/${jobId}`);
   revalidatePath("/");
-  return {};
+  return { savedAt: Date.now() };
 }
 
 export async function updateDetailsAction(

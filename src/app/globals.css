@@ -73,6 +73,24 @@
   --animate-fade-in: fade-in 0.6s ease-out backwards;
   --animate-draw-x: draw-x 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 
+  --animate-flash-out: flash-out 2.2s ease-in forwards;
+
+  /* Aparece y se desvanece solo (ej. el "Guardado" del estado). */
+  @keyframes flash-out {
+    0% {
+      opacity: 0;
+      transform: translateX(-4px);
+    }
+    10%,
+    70% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
   @keyframes fade-up {
     from {
       opacity: 0;
