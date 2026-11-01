@@ -259,18 +259,30 @@ export function NewJobForm() {
           </span>
           Trabajo
         </h2>
-        <textarea
-          name="client_request"
-          placeholder="¿Qué pidió el cliente?"
-          rows={2}
-          className={input}
-        />
-        <textarea
-          name="work_description"
-          placeholder="Descripción del trabajo / daño detectado"
-          rows={3}
-          className={input}
-        />
+        <div>
+          <label htmlFor="client_request" className="text-xs font-bold uppercase tracking-wide text-navy-700 dark:text-navy-200">
+            Chapa
+          </label>
+          <textarea
+            id="client_request"
+            name="client_request"
+            placeholder="Ej: abollón en puerta trasera izquierda"
+            rows={3}
+            className={`mt-1 ${input}`}
+          />
+        </div>
+        <div>
+          <label htmlFor="work_description" className="text-xs font-bold uppercase tracking-wide text-orange-600 dark:text-orange-400">
+            Pintura
+          </label>
+          <textarea
+            id="work_description"
+            name="work_description"
+            placeholder="Ej: pintar paragolpes delantero"
+            rows={3}
+            className={`mt-1 ${input}`}
+          />
+        </div>
       </section>
 
       <section className={`space-y-3 ${card}`}>

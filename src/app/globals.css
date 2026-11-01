@@ -110,6 +110,13 @@
   }
 }
 
+/* Alto de la navbar fija: así Next sabe que lo que queda debajo de ella no está
+   a la vista y, al navegar, sube la página nueva hasta arriba (si no, el botón
+   Volver puede quedar tapado). */
+html {
+  scroll-padding-top: 5rem;
+}
+
 body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackButton } from "@/components/BackButton";
 import { notFound } from "next/navigation";
 import { Car, ClipboardList, Mail, Phone } from "lucide-react";
 import { getClientById, getClientHistory } from "@/lib/data";
@@ -19,6 +20,9 @@ export default async function ClientDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
+      <div className="-mb-2">
+        <BackButton fallbackHref={"/clientes"} />
+      </div>
       <div className={pageHero}>
         <HeroDecor />
         <div className="relative flex items-center gap-4">
@@ -108,7 +112,12 @@ export default async function ClientDetailPage({
                       {job.vehicle.plate}
                     </p>
                     <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
-                      {job.work_description || job.client_request || "Sin descripción"}
+                      {[
+                        job.client_request && `Chapa: ${job.client_request}`,
+                        job.work_description && `Pintura: ${job.work_description}`,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ") || "Sin descripción"}
                     </p>
                     <p className="text-xs text-neutral-400 dark:text-neutral-500">
                       {new Date(job.entry_date).toLocaleDateString("es-AR")}

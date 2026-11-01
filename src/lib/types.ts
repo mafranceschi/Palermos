@@ -37,6 +37,8 @@ export type Vehicle = {
 export type Job = {
   id: string;
   vehicle_id: string;
+  // En la app se muestran como "Chapa" (client_request) y "Pintura"
+  // (work_description); se mantienen los nombres de columna originales.
   client_request: string | null;
   work_description: string | null;
   status: JobStatus;

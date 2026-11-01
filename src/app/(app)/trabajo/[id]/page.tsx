@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackButton } from "@/components/BackButton";
 import { notFound } from "next/navigation";
 import { Calendar, CarFront, ClipboardList, FileText, Images, User } from "lucide-react";
 import { getJobById, getSignedPhotoUrls } from "@/lib/data";
@@ -23,6 +24,9 @@ export default async function JobDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
+      <div className="-mb-2">
+        <BackButton fallbackHref={"/"} />
+      </div>
       <div className={pageHero}>
         <HeroDecor icon={CarFront} />
         <div
