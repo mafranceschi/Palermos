@@ -10,6 +10,7 @@ import {
   isValidPhotoUploadPath,
 } from "@/lib/data";
 import { getErrorMessage } from "@/lib/errors";
+import { normalizePlate } from "@/lib/plates";
 
 export type CreateJobState = { error?: string };
 
@@ -22,7 +23,7 @@ export async function createJobAction(
   _prevState: CreateJobState,
   formData: FormData
 ): Promise<CreateJobState> {
-  const plate = str(formData, "plate").toUpperCase();
+  const plate = normalizePlate(str(formData, "plate"));
   if (!plate) {
     return { error: "La patente es obligatoria." };
   }

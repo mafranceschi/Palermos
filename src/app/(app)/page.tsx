@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { CarFront, CheckCircle2, PackageCheck, Search, SlidersHorizontal, Wrench, X } from "lucide-react";
+import { CarFront, CheckCircle2, PackageCheck, Wrench } from "lucide-react";
 import { getJobs, getJobStatusCounts, getSignedPhotoUrl } from "@/lib/data";
-import { JOB_STATUSES, JOB_STATUS_LABELS, type JobStatus } from "@/lib/types";
+import type { JobStatus } from "@/lib/types";
 import { StatCard } from "@/components/StatCard";
 import { HeroDecor } from "@/components/HeroDecor";
 import { HeroHeading } from "@/components/HeroHeading";
 import { Stagger, StaggerItem } from "@/components/motion";
-import { buttonPrimary, buttonSecondary, card, input, inputBase, pageHero, sectionIcon } from "@/lib/ui";
+import { card, pageHero } from "@/lib/ui";
 import { JobCards } from "./JobCards";
+import { JobFilters } from "./JobFilters";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -85,75 +86,9 @@ export default async function DashboardPage({
         </StaggerItem>
       </Stagger>
 
-      <form className={`${card} space-y-4`}>
-        <div className="flex items-center gap-2 text-sm font-bold text-navy-900 dark:text-neutral-100">
-          <span className={sectionIcon}>
-            <SlidersHorizontal />
-          </span>
-          Filtros
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <div className="relative col-span-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              type="text"
-              name="plate"
-              defaultValue={plate}
-              placeholder="Patente"
-              className={`w-full py-2.5 pl-10 pr-4 ${inputBase}`}
-            />
-          </div>
-          <div className="relative col-span-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              type="text"
-              name="client"
-              defaultValue={clientName}
-              placeholder="Cliente"
-              className={`w-full py-2.5 pl-10 pr-4 ${inputBase}`}
-            />
-          </div>
-          <select
-            name="status"
-            defaultValue={status}
-            className={`${input} col-span-2 sm:col-span-1`}
-          >
-            <option value="">Todos los estados</option>
-            {JOB_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {JOB_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-          <div className="col-span-2 grid grid-cols-2 gap-2 sm:col-span-3">
-            <input
-              type="date"
-              name="from"
-              defaultValue={dateFrom}
-              aria-label="Desde"
-              className={`w-full min-w-0 px-3 py-2.5 ${inputBase}`}
-            />
-            <input
-              type="date"
-              name="to"
-              defaultValue={dateTo}
-              aria-label="Hasta"
-              className={`w-full min-w-0 px-3 py-2.5 ${inputBase}`}
-            />
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <button type="submit" className={buttonPrimary}>
-            Filtrar
-          </button>
-          {hasFilters && (
-            <Link href="/" className={buttonSecondary}>
-              <X className="h-4 w-4" />
-              Limpiar
-            </Link>
-          )}
-        </div>
-      </form>
+      <JobFilters
+        initial={{ plate, client: clientName, status, from: dateFrom, to: dateTo }}
+      />
 
       {jobs.length === 0 ? (
         <div className={`${card} flex flex-col items-center gap-2 border-dashed py-14 text-center`}>

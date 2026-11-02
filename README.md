@@ -24,6 +24,7 @@ reparación → Listo → Entregado) y búsqueda/filtro de ingresos.
    - `supabase/migrations/0003_fix_set_updated_at_search_path.sql`
    - `supabase/migrations/0004_delete_functions.sql`
    - `supabase/migrations/0005_app_users.sql`
+   - `supabase/migrations/0006_normalize_plates.sql`
    Esto crea las tablas (`clients`, `vehicles`, `jobs`, `photos`, `app_users`),
    las funciones de borrado y el bucket privado de Storage `job-photos` donde
    se guardan las fotos.

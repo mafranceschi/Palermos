@@ -1,5 +1,6 @@
 import "server-only";
 import { getSupabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-server";
+import { normalizePlate } from "@/lib/plates";
 import type {
   Client,
   Job,
@@ -26,11 +27,13 @@ export async function getJobs(
 
   let vehicleIds: string[] | undefined;
 
-  if (filters.plate) {
+  // Normalizada (solo A-Z y 0-9), así que no puede traer comodines de ilike.
+  const plate = filters.plate ? normalizePlate(filters.plate) : "";
+  if (plate) {
     const { data, error } = await supabase
       .from("vehicles")
       .select("id")
-      .ilike("plate", `%${filters.plate}%`);
+      .ilike("plate", `%${plate}%`);
     if (error) throw error;
     vehicleIds = (data ?? []).map((v) => v.id as string);
     if (vehicleIds.length === 0) return [];
@@ -40,7 +43,7 @@ export async function getJobs(
     const { data: clients, error: clientsError } = await supabase
       .from("clients")
       .select("id")
-      .ilike("name", `%${filters.clientName}%`);
+      .ilike("name", `%${escapeLike(filters.clientName.trim())}%`);
     if (clientsError) throw clientsError;
     const clientIds = (clients ?? []).map((c) => c.id as string);
     if (clientIds.length === 0) return [];
@@ -67,12 +70,31 @@ export async function getJobs(
 
   if (vehicleIds) query = query.in("vehicle_id", vehicleIds);
   if (filters.status) query = query.eq("status", filters.status);
-  if (filters.dateFrom) query = query.gte("entry_date", filters.dateFrom);
-  if (filters.dateTo) query = query.lte("entry_date", filters.dateTo);
+  // Las fechas del filtro son días completos en hora de Argentina: "hasta"
+  // incluye todo ese día (antes cortaba a las 00:00 UTC y lo dejaba afuera).
+  if (filters.dateFrom) {
+    query = query.gte("entry_date", `${filters.dateFrom}T00:00:00-03:00`);
+  }
+  if (filters.dateTo) {
+    query = query.lt("entry_date", `${nextDay(filters.dateTo)}T00:00:00-03:00`);
+  }
 
   const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as unknown as JobWithRelations[];
+}
+
+// Para usar texto del usuario dentro de un patrón ilike sin que % o _
+// funcionen como comodines.
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+// "2026-11-02" -> "2026-11-03"
+function nextDay(date: string): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
 }
 
 export async function getJobStatusCounts(): Promise<Record<JobStatus, number>> {
@@ -113,7 +135,7 @@ export async function findVehicleByPlate(
   const { data, error } = await supabase
     .from("vehicles")
     .select("*, client:clients(*)")
-    .eq("plate", plate.toUpperCase())
+    .eq("plate", normalizePlate(plate))
     .maybeSingle();
   if (error) throw error;
   return (data as unknown as Vehicle & { client: Client }) ?? null;
@@ -236,7 +258,7 @@ export async function createVehicle(
     .from("vehicles")
     .insert({
       client_id: input.client_id,
-      plate: input.plate.toUpperCase(),
+      plate: normalizePlate(input.plate),
       brand: input.brand || null,
       model: input.model || null,
       year: input.year ?? null,
