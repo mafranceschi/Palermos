@@ -307,17 +307,24 @@ export async function addPhoto(
   return data as Photo;
 }
 
-export async function uploadJobPhoto(
-  jobId: string,
-  file: File
-): Promise<string> {
+// Las fotos se suben directo desde el navegador a Storage (no pasan por el
+// servidor de la app, que en Vercel tiene límite de tamaño por request). El
+// servidor solo genera un permiso firmado de un solo uso por foto, en una ruta
+// que elige él, y después guarda esa ruta al crear el trabajo o agregar fotos.
+const UPLOAD_PATH_PATTERN = /^uploads\/[0-9a-f-]{36}\.webp$/;
+
+export function isValidPhotoUploadPath(path: string): boolean {
+  return UPLOAD_PATH_PATTERN.test(path);
+}
+
+export async function createPhotoUploadUrl(): Promise<{ path: string; signedUrl: string }> {
   const supabase = getSupabaseAdmin();
-  const path = `${jobId}/${crypto.randomUUID()}-${file.name}`;
-  const { error } = await supabase.storage
+  const path = `uploads/${crypto.randomUUID()}.webp`;
+  const { data, error } = await supabase.storage
     .from(PHOTOS_BUCKET)
-    .upload(path, file, { contentType: file.type });
+    .createSignedUploadUrl(path);
   if (error) throw error;
-  return path;
+  return { path, signedUrl: data.signedUrl };
 }
 
 export async function getSignedPhotoUrl(

@@ -7,7 +7,7 @@ import {
   createJob,
   createVehicle,
   findVehicleByPlate,
-  uploadJobPhoto,
+  isValidPhotoUploadPath,
 } from "@/lib/data";
 import { getErrorMessage } from "@/lib/errors";
 
@@ -78,12 +78,13 @@ export async function createJobAction(
     });
     jobId = job.id;
 
-    const photos = formData.getAll("photos").filter(
-      (item): item is File => item instanceof File && item.size > 0
-    );
+    // Las fotos ya se subieron directo a Storage desde el navegador; acá solo
+    // llegan sus rutas.
+    const photoPaths = formData
+      .getAll("photo_paths")
+      .filter((p): p is string => typeof p === "string" && isValidPhotoUploadPath(p));
 
-    for (const photo of photos) {
-      const path = await uploadJobPhoto(jobId, photo);
+    for (const path of photoPaths) {
       await addPhoto(jobId, path);
     }
   } catch (err) {

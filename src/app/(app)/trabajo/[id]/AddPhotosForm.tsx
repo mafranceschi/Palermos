@@ -1,61 +1,65 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
-import { Camera } from "lucide-react";
+import { startTransition, useActionState, useState } from "react";
+import { Camera, Loader2 } from "lucide-react";
 import { compressImage } from "@/lib/image-compression";
+import { uploadPhotos } from "@/lib/photo-upload";
+import { getErrorMessage } from "@/lib/errors";
 import { addPhotosAction, type ActionState } from "./actions";
-import { buttonPrimary, buttonSecondary } from "@/lib/ui";
+import { buttonSecondary } from "@/lib/ui";
 
 const initialState: ActionState = {};
 
+// Al elegir fotos se comprimen, se suben directo a Storage y se guardan en el
+// trabajo, todo de una (sin un segundo botón).
 export function AddPhotosForm({ jobId }: { jobId: string }) {
   const [state, formAction, pending] = useActionState(
     addPhotosAction.bind(null, jobId),
     initialState
   );
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [compressing, setCompressing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const busy = uploading || pending;
 
   async function handleFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
     if (files.length === 0) return;
 
-    setCompressing(true);
+    setUploading(true);
+    setUploadError(null);
     try {
       const compressed = await Promise.all(files.map(compressImage));
-      const dataTransfer = new DataTransfer();
-      compressed.forEach((file) => dataTransfer.items.add(file));
-      if (fileInputRef.current) {
-        fileInputRef.current.files = dataTransfer.files;
-      }
+      const paths = await uploadPhotos(compressed);
+      const formData = new FormData();
+      paths.forEach((path) => formData.append("photo_paths", path));
+      startTransition(() => formAction(formData));
+    } catch (err) {
+      setUploadError(getErrorMessage(err));
     } finally {
-      setCompressing(false);
+      setUploading(false);
     }
   }
 
+  const error = uploadError ?? state.error;
+
   return (
-    <form action={formAction} className="flex flex-wrap items-center gap-2 pt-1">
-      <label className={`${buttonSecondary} cursor-pointer`}>
-        <Camera className="h-4 w-4" />
-        Elegir fotos
+    <div className="flex flex-wrap items-center gap-2 pt-1">
+      <label
+        className={`${buttonSecondary} ${busy ? "pointer-events-none opacity-60" : "cursor-pointer"}`}
+      >
+        {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+        {uploading ? "Subiendo..." : pending ? "Guardando..." : "Agregar fotos"}
         <input
-          ref={fileInputRef}
           type="file"
-          name="photos"
           accept="image/*"
           multiple
+          disabled={busy}
           onChange={handleFilesChange}
           className="hidden"
         />
       </label>
-      <button
-        type="submit"
-        disabled={pending || compressing}
-        className={buttonPrimary}
-      >
-        {compressing ? "Optimizando..." : pending ? "Subiendo..." : "Agregar fotos"}
-      </button>
-      {state.error && <span className="text-sm text-red-600 dark:text-red-400">{state.error}</span>}
-    </form>
+      {error && <span className="text-sm text-red-600 dark:text-red-400">{error}</span>}
+    </div>
   );
 }

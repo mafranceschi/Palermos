@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addPhoto, deleteJob, updateJob, uploadJobPhoto } from "@/lib/data";
+import { addPhoto, deleteJob, isValidPhotoUploadPath, updateJob } from "@/lib/data";
 import { isAdmin } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { JOB_STATUSES, type JobStatus } from "@/lib/types";
@@ -63,13 +63,14 @@ export async function addPhotosAction(
   _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const photos = formData.getAll("photos").filter(
-    (item): item is File => item instanceof File && item.size > 0
-  );
+  // Las fotos ya están en Storage (subidas desde el navegador); llegan las rutas.
+  const photoPaths = formData
+    .getAll("photo_paths")
+    .filter((p): p is string => typeof p === "string" && isValidPhotoUploadPath(p));
+  if (photoPaths.length === 0) return { error: "Elegí al menos una foto." };
 
   try {
-    for (const photo of photos) {
-      const path = await uploadJobPhoto(jobId, photo);
+    for (const path of photoPaths) {
       await addPhoto(jobId, path);
     }
   } catch (err) {
