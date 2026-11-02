@@ -283,10 +283,11 @@ export function NewJobForm({ isAdmin }: { isAdmin: boolean }) {
             className={`mt-1 ${input}`}
           />
         </div>
+        {/* Costos: solo se muestran a admin. */}
         {isAdmin && (
-          <div className="space-y-3 rounded-2xl border border-dashed border-orange-200 p-4 dark:border-orange-500/20">
+          <div className="space-y-3 border-t border-neutral-200/80 pt-4 dark:border-white/5">
             <p className="text-xs font-bold uppercase tracking-wide text-orange-600 dark:text-orange-400">
-              Costos de pintura · solo admin
+              Costos de pintura
             </p>
             <PricingFields initial={EMPTY_PRICING} />
           </div>

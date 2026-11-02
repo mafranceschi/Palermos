@@ -96,9 +96,6 @@ export default async function JobDetailPage({
               <Wallet />
             </span>
             Costos de pintura
-            <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
-              Solo admin
-            </span>
           </h2>
           <PricingForm jobId={job.id} pricing={pricing} />
         </section>
