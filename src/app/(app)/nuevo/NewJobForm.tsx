@@ -15,7 +15,13 @@ const initialState: CreateJobState = {};
 
 type FoundVehicle = Vehicle & { client: Client };
 
-export function NewJobForm({ isAdmin }: { isAdmin: boolean }) {
+export function NewJobForm({
+  isAdmin,
+  painterOptions,
+}: {
+  isAdmin: boolean;
+  painterOptions: string[];
+}) {
   const [state, formAction, pending] = useActionState(
     createJobAction,
     initialState
@@ -289,7 +295,7 @@ export function NewJobForm({ isAdmin }: { isAdmin: boolean }) {
             <p className="text-xs font-bold uppercase tracking-wide text-orange-600 dark:text-orange-400">
               Costos de pintura
             </p>
-            <PricingFields initial={EMPTY_PRICING} />
+            <PricingFields initial={EMPTY_PRICING} painterOptions={painterOptions} />
           </div>
         )}
       </section>

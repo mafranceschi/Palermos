@@ -1,11 +1,17 @@
 // Costos de pintura de un trabajo (solo para admin). Montos en pesos.
 export type JobPricing = {
+  painter: string | null; // pintor que hizo el trabajo
   panels: number | null; // cantidad de paños
   panel_price: number | null; // lo que cobra el pintor por paño
   client_price: number | null; // lo que se le cobra al cliente
 };
 
-export const EMPTY_PRICING: JobPricing = { panels: null, panel_price: null, client_price: null };
+export const EMPTY_PRICING: JobPricing = {
+  painter: null,
+  panels: null,
+  panel_price: null,
+  client_price: null,
+};
 
 export type PricingSummary = {
   painterCost: number | null; // paños × valor del paño
@@ -13,7 +19,9 @@ export type PricingSummary = {
   margin: number | null; // ganancia / cobro al cliente (0..1)
 };
 
-export function summarizePricing(p: JobPricing): PricingSummary {
+export function summarizePricing(
+  p: Pick<JobPricing, "panels" | "panel_price" | "client_price">
+): PricingSummary {
   const painterCost =
     p.panels != null && p.panel_price != null ? p.panels * p.panel_price : null;
   const profit =
@@ -24,7 +32,9 @@ export function summarizePricing(p: JobPricing): PricingSummary {
 }
 
 export function hasPricing(p: JobPricing | null | undefined): boolean {
-  return !!p && (p.panels != null || p.panel_price != null || p.client_price != null);
+  return (
+    !!p && (p.painter != null || p.panels != null || p.panel_price != null || p.client_price != null)
+  );
 }
 
 const moneyFormat = new Intl.NumberFormat("es-AR", {
@@ -57,6 +67,7 @@ export function parseCount(raw: string): number | null {
 
 // Nombres de los campos en los formularios.
 export const PRICING_FIELDS = {
+  painter: "paint_painter",
   panels: "paint_panels",
   panelPrice: "paint_panel_price",
   clientPrice: "paint_client_price",
@@ -68,8 +79,15 @@ export function pricingFromForm(formData: FormData): JobPricing {
     return typeof v === "string" ? v : "";
   };
   return {
+    painter: normalizePainter(get(PRICING_FIELDS.painter)),
     panels: parseCount(get(PRICING_FIELDS.panels)),
     panel_price: parseMoney(get(PRICING_FIELDS.panelPrice)),
     client_price: parseMoney(get(PRICING_FIELDS.clientPrice)),
   };
+}
+
+// "  carlos   gómez " -> "carlos gómez". Vacío -> null.
+export function normalizePainter(raw: string): string | null {
+  const name = raw.trim().replace(/\s+/g, " ");
+  return name || null;
 }

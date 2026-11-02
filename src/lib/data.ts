@@ -404,12 +404,14 @@ export async function deleteClient(clientId: string): Promise<void> {
 // --- Costos de pintura (solo admin: los llamadores lo verifican) ---
 
 function toPricing(row: {
+  painter: string | null;
   panels: number | null;
   panel_price: number | string | null;
   client_price: number | string | null;
 }): JobPricing {
   // numeric de Postgres llega como string.
   return {
+    painter: row.painter,
     panels: row.panels,
     panel_price: row.panel_price == null ? null : Number(row.panel_price),
     client_price: row.client_price == null ? null : Number(row.client_price),
@@ -420,7 +422,7 @@ export async function getJobPricing(jobId: string): Promise<JobPricing> {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("job_pricing")
-    .select("panels, panel_price, client_price")
+    .select("painter, panels, panel_price, client_price")
     .eq("job_id", jobId)
     .maybeSingle();
   if (error) throw error;
@@ -432,7 +434,7 @@ export async function getJobPricingMap(jobIds: string[]): Promise<Record<string,
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("job_pricing")
-    .select("job_id, panels, panel_price, client_price")
+    .select("job_id, painter, panels, panel_price, client_price")
     .in("job_id", jobIds);
   if (error) throw error;
   return Object.fromEntries((data ?? []).map((row) => [row.job_id as string, toPricing(row)]));
@@ -440,8 +442,34 @@ export async function getJobPricingMap(jobIds: string[]): Promise<Record<string,
 
 export async function saveJobPricing(jobId: string, pricing: JobPricing): Promise<void> {
   const supabase = getSupabaseAdmin();
+  // Si el pintor ya existe con otras mayúsculas ("carlos gomez" vs "Carlos
+  // Gomez"), se guarda como ya estaba, así no quedan dos versiones.
+  if (pricing.painter) {
+    const existing = (await getPainterNames()).find(
+      (name) => name.toLowerCase() === pricing.painter!.toLowerCase()
+    );
+    if (existing) pricing = { ...pricing, painter: existing };
+  }
   const { error } = await supabase
     .from("job_pricing")
     .upsert({ job_id: jobId, ...pricing, updated_at: new Date().toISOString() });
   if (error) throw error;
+}
+
+// Pintores ya usados, para sugerirlos al escribir (sin repetir mayúsculas).
+// Si un nombre aparece con distintas mayúsculas, gana la forma más vieja.
+export async function getPainterNames(): Promise<string[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("job_pricing")
+    .select("painter")
+    .not("painter", "is", null)
+    .order("updated_at", { ascending: true });
+  if (error) throw error;
+  const seen = new Map<string, string>();
+  for (const row of data ?? []) {
+    const name = row.painter as string;
+    if (!seen.has(name.toLowerCase())) seen.set(name.toLowerCase(), name);
+  }
+  return [...seen.values()].sort((a, b) => a.localeCompare(b, "es"));
 }

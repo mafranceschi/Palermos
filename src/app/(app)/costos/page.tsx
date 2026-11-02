@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertCircle, ChevronRight, HandCoins, Paintbrush, TrendingUp, Wallet } from "lucide-react";
+import { AlertCircle, ChevronRight, HandCoins, Paintbrush, TrendingUp, Users, Wallet } from "lucide-react";
 import { isAdmin } from "@/lib/auth";
 import { getJobPricingMap, getJobs } from "@/lib/data";
 import { formatMoney, summarizePricing, type JobPricing } from "@/lib/pricing";
@@ -84,6 +84,20 @@ export default async function CostsPage({
   const margin = totalClient > 0 ? totalProfit / totalClient : null;
   const missing = rows.length - complete.length;
 
+  // Resumen por pintor (solo trabajos con costos completos). El nombre se
+  // agrupa sin distinguir mayúsculas.
+  const byPainter = new Map<string, { name: string; jobs: number; paid: number; profit: number }>();
+  for (const r of complete) {
+    const name = r.pricing!.painter ?? "Sin pintor";
+    const key = name.toLowerCase();
+    const entry = byPainter.get(key) ?? { name, jobs: 0, paid: 0, profit: 0 };
+    entry.jobs += 1;
+    entry.paid += r.summary!.painterCost ?? 0;
+    entry.profit += r.summary!.profit ?? 0;
+    byPainter.set(key, entry);
+  }
+  const painters = [...byPainter.values()].sort((a, b) => b.paid - a.paid);
+
   return (
     <div className="space-y-5">
       <div className={pageHero}>
@@ -156,6 +170,40 @@ export default async function CostsPage({
         </p>
       )}
 
+      {painters.length > 0 && (
+        <section className={`space-y-3 ${card}`}>
+          <h2 className={sectionLabel}>
+            <span className={sectionIcon}>
+              <Users />
+            </span>
+            Por pintor
+          </h2>
+          <ul className="divide-y divide-neutral-200/80 dark:divide-white/5">
+            {painters.map((p) => (
+              <li key={p.name} className="flex items-center gap-3 py-2.5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300">
+                  <Paintbrush className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-bold text-navy-900 dark:text-white">{p.name}</p>
+                  <p className="text-xs text-neutral-500 tabular-nums dark:text-neutral-400">
+                    {p.jobs} trabajo{p.jobs === 1 ? "" : "s"} · se le pagó {formatMoney(p.paid)}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 text-right text-sm font-extrabold tabular-nums ${
+                    p.profit < 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"
+                  }`}
+                  title="Ganancia con los trabajos de este pintor"
+                >
+                  {formatMoney(p.profit)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>
           <span className={sectionIcon}>
@@ -186,6 +234,12 @@ export default async function CostsPage({
                     <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
                       {job.vehicle.client.name} · {new Date(job.entry_date).toLocaleDateString("es-AR")}
                     </p>
+                    {pricing?.painter && (
+                      <p className="flex items-center gap-1 text-xs font-semibold text-navy-700 dark:text-navy-200">
+                        <Paintbrush className="h-3 w-3" />
+                        {pricing.painter}
+                      </p>
+                    )}
                     {done ? (
                       <p className="text-xs text-neutral-400 tabular-nums dark:text-neutral-500">
                         {pricing!.panels} paño{pricing!.panels === 1 ? "" : "s"} ·

@@ -9,7 +9,15 @@ import { buttonPrimary } from "@/lib/ui";
 
 const initialState: ActionState = {};
 
-export function PricingForm({ jobId, pricing }: { jobId: string; pricing: JobPricing }) {
+export function PricingForm({
+  jobId,
+  pricing,
+  painterOptions,
+}: {
+  jobId: string;
+  pricing: JobPricing;
+  painterOptions: string[];
+}) {
   const [state, formAction, pending] = useActionState(
     savePricingAction.bind(null, jobId),
     initialState
@@ -19,7 +27,7 @@ export function PricingForm({ jobId, pricing }: { jobId: string; pricing: JobPri
     <form action={formAction} className="space-y-3">
       {/* key: React resetea el form al terminar de guardar; se vuelve a montar
           con los valores guardados. */}
-      <PricingFields key={state.savedAt ?? 0} initial={pricing} />
+      <PricingFields key={state.savedAt ?? 0} initial={pricing} painterOptions={painterOptions} />
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={pending} className={buttonPrimary}>
           {pending ? "Guardando..." : "Guardar costos"}

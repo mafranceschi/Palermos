@@ -5,9 +5,12 @@ import { HeroDecor } from "@/components/HeroDecor";
 import { HeroHeading } from "@/components/HeroHeading";
 import { NewJobForm } from "./NewJobForm";
 import { isAdmin } from "@/lib/auth";
+import { getPainterNames } from "@/lib/data";
 
 export default async function NuevoIngresoPage() {
   const admin = await isAdmin();
+  // Sugerencias de pintores: solo hacen falta (y solo se leen) para admin.
+  const painterOptions = admin ? await getPainterNames() : [];
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
@@ -23,7 +26,7 @@ export default async function NuevoIngresoPage() {
           />
         </div>
       </div>
-      <NewJobForm isAdmin={admin} />
+      <NewJobForm isAdmin={admin} painterOptions={painterOptions} />
     </div>
   );
 }

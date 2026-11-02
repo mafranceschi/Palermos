@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { Paintbrush, TrendingDown, TrendingUp } from "lucide-react";
 import {
   formatMoney,
   formatMoneyInput,
@@ -17,7 +17,13 @@ const label = "text-xs font-bold uppercase tracking-wide text-neutral-500 dark:t
 
 // Campos de costos de pintura con la cuenta en vivo. Solo se renderiza para
 // admin. Los valores viajan en el form con los nombres de PRICING_FIELDS.
-export function PricingFields({ initial }: { initial: JobPricing }) {
+export function PricingFields({
+  initial,
+  painterOptions,
+}: {
+  initial: JobPricing;
+  painterOptions: string[];
+}) {
   const [panels, setPanels] = useState(initial.panels?.toString() ?? "");
   const [panelPrice, setPanelPrice] = useState(
     initial.panel_price != null ? initial.panel_price.toLocaleString("es-AR") : ""
@@ -35,6 +41,29 @@ export function PricingFields({ initial }: { initial: JobPricing }) {
 
   return (
     <div className="space-y-3">
+      <div>
+        <label htmlFor={PRICING_FIELDS.painter} className={label}>
+          Pintor
+        </label>
+        <div className="relative mt-1">
+          <Paintbrush className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+          <input
+            id={PRICING_FIELDS.painter}
+            name={PRICING_FIELDS.painter}
+            defaultValue={initial.painter ?? ""}
+            list="painter-options"
+            placeholder="¿Quién lo pintó?"
+            autoComplete="off"
+            className={`w-full py-2.5 pl-10 pr-4 ${inputBase}`}
+          />
+          {/* Sugiere los pintores ya cargados para escribirlos siempre igual. */}
+          <datalist id="painter-options">
+            {painterOptions.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div>
           <label htmlFor={PRICING_FIELDS.panels} className={label}>

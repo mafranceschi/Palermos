@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BackButton } from "@/components/BackButton";
 import { notFound } from "next/navigation";
 import { Calendar, CarFront, ClipboardList, FileText, Images, User, Wallet } from "lucide-react";
-import { getJobById, getJobPricing, getSignedPhotoUrls } from "@/lib/data";
+import { getJobById, getJobPricing, getPainterNames, getSignedPhotoUrls } from "@/lib/data";
 import { StatusBadge, STATUS_TOP_ACCENT } from "@/components/StatusBadge";
 import { card, pageHero, sectionIcon, sectionLabel } from "@/lib/ui";
 import { HeroDecor } from "@/components/HeroDecor";
@@ -26,7 +26,9 @@ export default async function JobDetailPage({
 
   const [photos, admin] = await Promise.all([getSignedPhotoUrls(job.photos), isAdmin()]);
   // Los costos solo se leen de la base para admin: a un viewer ni le llegan.
-  const pricing = admin ? await getJobPricing(job.id) : null;
+  const [pricing, painterOptions] = admin
+    ? await Promise.all([getJobPricing(job.id), getPainterNames()])
+    : [null, []];
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -97,7 +99,7 @@ export default async function JobDetailPage({
             </span>
             Costos de pintura
           </h2>
-          <PricingForm jobId={job.id} pricing={pricing} />
+          <PricingForm jobId={job.id} pricing={pricing} painterOptions={painterOptions} />
         </section>
       )}
 
