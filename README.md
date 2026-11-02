@@ -11,6 +11,9 @@ reparación → Listo → Entregado) y búsqueda/filtro de ingresos.
 - Login con usuario y contraseña guardados en la base (tabla `app_users`,
   contraseñas hasheadas con scrypt). Dos roles: **admin** (puede todo,
   incluido borrar) y **solo lectura** (ve, carga y edita, pero no borra)
+- Costos de pintura por trabajo (solo admin): cantidad de paños × valor del
+  paño (lo que cobra el pintor) contra lo que se le cobra al cliente, con la
+  ganancia calculada. Se guardan en `job_pricing`, que solo se lee para admin
 - Las fotos se comprimen y convierten a WebP en el navegador antes de subirse,
   para no consumir espacio de storage innecesariamente
 
@@ -25,6 +28,7 @@ reparación → Listo → Entregado) y búsqueda/filtro de ingresos.
    - `supabase/migrations/0004_delete_functions.sql`
    - `supabase/migrations/0005_app_users.sql`
    - `supabase/migrations/0006_normalize_plates.sql`
+   - `supabase/migrations/0007_job_pricing.sql`
    Esto crea las tablas (`clients`, `vehicles`, `jobs`, `photos`, `app_users`),
    las funciones de borrado y el bucket privado de Storage `job-photos` donde
    se guardan las fotos.

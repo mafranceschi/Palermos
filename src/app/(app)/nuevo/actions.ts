@@ -8,7 +8,10 @@ import {
   createVehicle,
   findVehicleByPlate,
   isValidPhotoUploadPath,
+  saveJobPricing,
 } from "@/lib/data";
+import { isAdmin } from "@/lib/auth";
+import { hasPricing, pricingFromForm } from "@/lib/pricing";
 import { getErrorMessage } from "@/lib/errors";
 import { normalizePlate } from "@/lib/plates";
 
@@ -87,6 +90,12 @@ export async function createJobAction(
 
     for (const path of photoPaths) {
       await addPhoto(jobId, path);
+    }
+
+    // Costos de pintura: solo si quien carga es admin (un viewer ni ve los campos).
+    const pricing = pricingFromForm(formData);
+    if (hasPricing(pricing) && (await isAdmin())) {
+      await saveJobPricing(jobId, pricing);
     }
   } catch (err) {
     return {

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CarFront, CheckCircle2, PackageCheck, Wrench } from "lucide-react";
-import { getJobs, getJobStatusCounts, getSignedPhotoUrl } from "@/lib/data";
+import { getJobPricingMap, getJobs, getJobStatusCounts, getSignedPhotoUrl } from "@/lib/data";
+import { isAdmin } from "@/lib/auth";
+import { summarizePricing } from "@/lib/pricing";
 import type { JobStatus } from "@/lib/types";
 import { StatCard } from "@/components/StatCard";
 import { HeroDecor } from "@/components/HeroDecor";
@@ -40,14 +42,21 @@ export default async function DashboardPage({
     getJobStatusCounts(),
   ]);
 
+  // Ganancia por trabajo, solo para admin. A las tarjetas (componente de
+  // cliente) solo les llega el número de ganancia, no los costos.
+  const admin = await isAdmin();
+  const pricingMap = admin ? await getJobPricingMap(jobs.map((j) => j.id)) : {};
+
   const jobsWithThumbnails = await Promise.all(
     jobs.map(async (job) => {
       const firstPhoto = job.photos[0];
-      if (!firstPhoto) return { ...job, thumbnailUrl: null };
+      const pricing = pricingMap[job.id];
+      const profit = pricing ? summarizePricing(pricing).profit : null;
+      if (!firstPhoto) return { ...job, thumbnailUrl: null, profit };
       try {
-        return { ...job, thumbnailUrl: await getSignedPhotoUrl(firstPhoto.storage_path, 600) };
+        return { ...job, thumbnailUrl: await getSignedPhotoUrl(firstPhoto.storage_path, 600), profit };
       } catch {
-        return { ...job, thumbnailUrl: null };
+        return { ...job, thumbnailUrl: null, profit };
       }
     })
   );

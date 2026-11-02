@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { BackButton } from "@/components/BackButton";
 import { notFound } from "next/navigation";
-import { Calendar, CarFront, ClipboardList, FileText, Images, User } from "lucide-react";
-import { getJobById, getSignedPhotoUrls } from "@/lib/data";
+import { Calendar, CarFront, ClipboardList, FileText, Images, User, Wallet } from "lucide-react";
+import { getJobById, getJobPricing, getSignedPhotoUrls } from "@/lib/data";
 import { StatusBadge, STATUS_TOP_ACCENT } from "@/components/StatusBadge";
 import { card, pageHero, sectionIcon, sectionLabel } from "@/lib/ui";
 import { HeroDecor } from "@/components/HeroDecor";
@@ -10,6 +10,7 @@ import { StatusForm } from "./StatusForm";
 import { DetailsForm } from "./DetailsForm";
 import { AddPhotosForm } from "./AddPhotosForm";
 import { PhotoGallery } from "./PhotoGallery";
+import { PricingForm } from "./PricingForm";
 import { deleteJobAction } from "./actions";
 import { isAdmin } from "@/lib/auth";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -24,6 +25,8 @@ export default async function JobDetailPage({
   if (!job) notFound();
 
   const [photos, admin] = await Promise.all([getSignedPhotoUrls(job.photos), isAdmin()]);
+  // Los costos solo se leen de la base para admin: a un viewer ni le llegan.
+  const pricing = admin ? await getJobPricing(job.id) : null;
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -85,6 +88,21 @@ export default async function JobDetailPage({
         </h2>
         <DetailsForm job={job} />
       </section>
+
+      {pricing && (
+        <section className={`space-y-3 ${card}`}>
+          <h2 className={sectionLabel}>
+            <span className={sectionIcon}>
+              <Wallet />
+            </span>
+            Costos de pintura
+            <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
+              Solo admin
+            </span>
+          </h2>
+          <PricingForm jobId={job.id} pricing={pricing} />
+        </section>
+      )}
 
       <section className={`space-y-3 ${card}`}>
         <h2 className={sectionLabel}>

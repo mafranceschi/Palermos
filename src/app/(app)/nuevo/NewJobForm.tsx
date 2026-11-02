@@ -8,12 +8,14 @@ import { getErrorMessage } from "@/lib/errors";
 import { createJobAction, type CreateJobState } from "./actions";
 import type { Client, Vehicle } from "@/lib/types";
 import { card, input, sectionIcon, sectionLabel } from "@/lib/ui";
+import { PricingFields } from "@/components/PricingFields";
+import { EMPTY_PRICING } from "@/lib/pricing";
 
 const initialState: CreateJobState = {};
 
 type FoundVehicle = Vehicle & { client: Client };
 
-export function NewJobForm() {
+export function NewJobForm({ isAdmin }: { isAdmin: boolean }) {
   const [state, formAction, pending] = useActionState(
     createJobAction,
     initialState
@@ -281,6 +283,14 @@ export function NewJobForm() {
             className={`mt-1 ${input}`}
           />
         </div>
+        {isAdmin && (
+          <div className="space-y-3 rounded-2xl border border-dashed border-orange-200 p-4 dark:border-orange-500/20">
+            <p className="text-xs font-bold uppercase tracking-wide text-orange-600 dark:text-orange-400">
+              Costos de pintura · solo admin
+            </p>
+            <PricingFields initial={EMPTY_PRICING} />
+          </div>
+        )}
       </section>
 
       <section className={`space-y-3 ${card}`}>

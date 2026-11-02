@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addPhoto, deleteJob, isValidPhotoUploadPath, updateJob } from "@/lib/data";
+import { addPhoto, deleteJob, isValidPhotoUploadPath, saveJobPricing, updateJob } from "@/lib/data";
+import { pricingFromForm } from "@/lib/pricing";
 import { isAdmin } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/errors";
 import { JOB_STATUSES, type JobStatus } from "@/lib/types";
@@ -95,4 +96,24 @@ export async function deleteJobAction(jobId: string): Promise<ActionState> {
   revalidatePath("/");
   revalidatePath("/clientes", "layout");
   redirect("/");
+}
+
+export async function savePricingAction(
+  jobId: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  if (!(await isAdmin())) {
+    return { error: "Solo un admin puede ver y cargar costos." };
+  }
+
+  try {
+    await saveJobPricing(jobId, pricingFromForm(formData));
+  } catch (err) {
+    return { error: `No se pudieron guardar los costos: ${getErrorMessage(err)}` };
+  }
+
+  revalidatePath(`/trabajo/${jobId}`);
+  revalidatePath("/");
+  return { savedAt: Date.now() };
 }

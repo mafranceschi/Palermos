@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { Car, ChevronRight } from "lucide-react";
 import { StatusBadge, STATUS_TOP_ACCENT } from "@/components/StatusBadge";
 import type { JobWithRelations } from "@/lib/types";
+import { formatMoney } from "@/lib/pricing";
 
-type JobCard = JobWithRelations & { thumbnailUrl: string | null };
+// profit: ganancia del trabajo; solo viene cargada para admin.
+type JobCard = JobWithRelations & { thumbnailUrl: string | null; profit: number | null };
 
 export function JobCards({ jobs }: { jobs: JobCard[] }) {
   return (
@@ -52,9 +54,24 @@ export function JobCards({ jobs }: { jobs: JobCard[] }) {
                 <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
                   {job.vehicle.client.name}
                 </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  {new Date(job.entry_date).toLocaleDateString("es-AR")}
-                </p>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                    {new Date(job.entry_date).toLocaleDateString("es-AR")}
+                  </p>
+                  {job.profit != null && (
+                    <span
+                      title="Ganancia del trabajo"
+                      className={`rounded-full px-2 py-0.5 text-xs font-bold tabular-nums ${
+                        job.profit < 0
+                          ? "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400"
+                          : "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                      }`}
+                    >
+                      {job.profit < 0 ? "" : "+"}
+                      {formatMoney(job.profit)}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </Link>

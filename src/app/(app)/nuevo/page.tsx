@@ -4,8 +4,10 @@ import { pageHero } from "@/lib/ui";
 import { HeroDecor } from "@/components/HeroDecor";
 import { HeroHeading } from "@/components/HeroHeading";
 import { NewJobForm } from "./NewJobForm";
+import { isAdmin } from "@/lib/auth";
 
-export default function NuevoIngresoPage() {
+export default async function NuevoIngresoPage() {
+  const admin = await isAdmin();
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
@@ -21,7 +23,7 @@ export default function NuevoIngresoPage() {
           />
         </div>
       </div>
-      <NewJobForm />
+      <NewJobForm isAdmin={admin} />
     </div>
   );
 }

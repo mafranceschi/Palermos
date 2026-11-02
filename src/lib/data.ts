@@ -1,6 +1,7 @@
 import "server-only";
 import { getSupabaseAdmin, PHOTOS_BUCKET } from "@/lib/supabase-server";
 import { normalizePlate } from "@/lib/plates";
+import { EMPTY_PRICING, type JobPricing } from "@/lib/pricing";
 import type {
   Client,
   Job,
@@ -398,4 +399,49 @@ export async function deleteClient(clientId: string): Promise<void> {
   });
   if (error) throw error;
   await removePhotoFiles((data as string[] | null) ?? []);
+}
+
+// --- Costos de pintura (solo admin: los llamadores lo verifican) ---
+
+function toPricing(row: {
+  panels: number | null;
+  panel_price: number | string | null;
+  client_price: number | string | null;
+}): JobPricing {
+  // numeric de Postgres llega como string.
+  return {
+    panels: row.panels,
+    panel_price: row.panel_price == null ? null : Number(row.panel_price),
+    client_price: row.client_price == null ? null : Number(row.client_price),
+  };
+}
+
+export async function getJobPricing(jobId: string): Promise<JobPricing> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("job_pricing")
+    .select("panels, panel_price, client_price")
+    .eq("job_id", jobId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? toPricing(data) : EMPTY_PRICING;
+}
+
+export async function getJobPricingMap(jobIds: string[]): Promise<Record<string, JobPricing>> {
+  if (jobIds.length === 0) return {};
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("job_pricing")
+    .select("job_id, panels, panel_price, client_price")
+    .in("job_id", jobIds);
+  if (error) throw error;
+  return Object.fromEntries((data ?? []).map((row) => [row.job_id as string, toPricing(row)]));
+}
+
+export async function saveJobPricing(jobId: string, pricing: JobPricing): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("job_pricing")
+    .upsert({ job_id: jobId, ...pricing, updated_at: new Date().toISOString() });
+  if (error) throw error;
 }
