@@ -25,7 +25,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
               <BrandMark size="sm" />
             </span>
-            <BrandWordmark />
+            {/* En celulares el texto no entra junto a todos los íconos: solo logo. */}
+            <span className="hidden sm:block">
+              <BrandWordmark />
+            </span>
           </Link>
           <span
             className={`hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset lg:inline-flex ${
@@ -44,7 +47,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <NavLinks isAdmin={user.role === "admin"} />
             <Link href="/nuevo" className={`ml-1 ${buttonPrimary}`}>
               <Plus className="h-4 w-4" strokeWidth={2.5} />
-              <span className="hidden whitespace-nowrap sm:inline">Nuevo ingreso</span>
+              <span className="hidden whitespace-nowrap lg:inline">Nuevo ingreso</span>
             </Link>
             <form action={logout}>
               <button

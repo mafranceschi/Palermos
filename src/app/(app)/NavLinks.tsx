@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutGrid, ShieldCheck, Users } from "lucide-react";
+import { LayoutGrid, ShieldCheck, Users, Wallet } from "lucide-react";
 
 const links = [
   { href: "/", label: "Ingresos", icon: LayoutGrid },
   { href: "/clientes", label: "Clientes", icon: Users },
 ];
 
-const adminLinks = [{ href: "/usuarios", label: "Usuarios", icon: ShieldCheck }];
+const adminLinks = [
+  { href: "/costos", label: "Costos", icon: Wallet },
+  { href: "/usuarios", label: "Usuarios", icon: ShieldCheck },
+];
 
 export function NavLinks({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
@@ -39,7 +42,7 @@ export function NavLinks({ isAdmin }: { isAdmin: boolean }) {
               </motion.span>
             )}
             <Icon className="relative h-4 w-4" strokeWidth={2.25} />
-            <span className="relative hidden sm:inline">{label}</span>
+            <span className="relative hidden md:inline">{label}</span>
           </Link>
         );
       })}
