@@ -49,6 +49,7 @@ export async function updateDetailsAction(
     await updateJob(jobId, {
       client_request: str(formData, "client_request"),
       work_description: str(formData, "work_description"),
+      parts: str(formData, "parts"),
       notes: str(formData, "notes"),
     });
   } catch (err) {

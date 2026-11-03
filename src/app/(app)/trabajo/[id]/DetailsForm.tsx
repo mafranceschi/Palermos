@@ -40,6 +40,19 @@ export function DetailsForm({ job }: { job: Job }) {
         />
       </div>
       <div>
+        <label htmlFor="parts" className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+          Repuestos
+        </label>
+        <textarea
+          id="parts"
+          name="parts"
+          defaultValue={job.parts ?? ""}
+          placeholder={"Uno por línea. Ej:\nÓptica delantera derecha\nParagolpes trasero"}
+          rows={3}
+          className={`mt-1 ${input}`}
+        />
+      </div>
+      <div>
         <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
           Notas internas
         </label>

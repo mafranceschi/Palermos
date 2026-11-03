@@ -289,6 +289,18 @@ export function NewJobForm({
             className={`mt-1 ${input}`}
           />
         </div>
+        <div>
+          <label htmlFor="parts" className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+            Repuestos
+          </label>
+          <textarea
+            id="parts"
+            name="parts"
+            placeholder={"Uno por línea. Ej:\nÓptica delantera derecha\nParagolpes trasero"}
+            rows={3}
+            className={`mt-1 ${input}`}
+          />
+        </div>
         {/* Costos: solo se muestran a admin. */}
         {isAdmin && (
           <div className="space-y-3 border-t border-neutral-200/80 pt-4 dark:border-white/5">

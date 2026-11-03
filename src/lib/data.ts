@@ -275,6 +275,7 @@ export type NewJobInput = {
   vehicle_id: string;
   client_request?: string;
   work_description?: string;
+  parts?: string;
   notes?: string;
 };
 
@@ -286,6 +287,7 @@ export async function createJob(input: NewJobInput): Promise<Job> {
       vehicle_id: input.vehicle_id,
       client_request: input.client_request || null,
       work_description: input.work_description || null,
+      parts: input.parts || null,
       notes: input.notes || null,
     })
     .select("*")
@@ -299,6 +301,7 @@ export async function updateJob(
   input: Partial<{
     client_request: string;
     work_description: string;
+    parts: string;
     notes: string;
     status: JobStatus;
     exit_date: string | null;

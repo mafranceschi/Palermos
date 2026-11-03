@@ -33,6 +33,7 @@ export async function createJobAction(
 
   const clientRequest = str(formData, "client_request");
   const workDescription = str(formData, "work_description");
+  const parts = str(formData, "parts");
 
   let jobId: string;
 
@@ -79,6 +80,7 @@ export async function createJobAction(
       vehicle_id: vehicleId,
       client_request: clientRequest,
       work_description: workDescription,
+      parts,
     });
     jobId = job.id;
 

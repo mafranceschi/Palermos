@@ -41,6 +41,7 @@ export type Job = {
   // (work_description); se mantienen los nombres de columna originales.
   client_request: string | null;
   work_description: string | null;
+  parts: string | null; // repuestos a cambiar, uno por línea
   status: JobStatus;
   entry_date: string;
   exit_date: string | null;
